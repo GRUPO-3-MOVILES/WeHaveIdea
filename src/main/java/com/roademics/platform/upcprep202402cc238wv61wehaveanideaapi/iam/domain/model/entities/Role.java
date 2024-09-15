@@ -7,16 +7,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
+@Getter
 @Document(collection = "roles")
 public class Role {
 
     @Id
-    private String id;
+    private Long id;
 
-    @Getter
     private Roles name;
-
-    public Role() {}
 
     public Role(Roles name) {
         this.name = name;
