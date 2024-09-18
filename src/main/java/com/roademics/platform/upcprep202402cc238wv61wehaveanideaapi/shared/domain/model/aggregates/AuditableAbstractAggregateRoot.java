@@ -14,7 +14,7 @@ import java.util.Date;
 public abstract class AuditableAbstractAggregateRoot<T extends AbstractAggregateRoot<T>> extends AbstractAggregateRoot<T> {
 
     @Id // MongoDB usa @Id en lugar de @GeneratedValue
-    private String id; // MongoDB generalmente usa cadenas para las IDs, aunque puedes usar otro tipo si lo prefieres.
+    private Long id;
 
     @CreatedDate
     private Date createdAt;
