@@ -4,37 +4,29 @@ import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.dom
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.domain.model.entities.Edge;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.domain.model.entities.Node;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
+@Setter
+@Getter
+@Data
 @Document(collection = "roadmaps")
 public class Roadmap extends AuditableAbstractAggregateRoot<Roadmap> {
 
-    @Getter
-    @Setter
     private String ownerId; // El perfil del usuario que creó el roadmap
 
-    @Getter
-    @Setter
     private String title;
 
-    @Getter
-    @Setter
     private boolean isAIRecommended;
 
-    @Getter
-    @Setter
     private String description;
 
-    @Getter
-    @Setter
     private List<Node> nodes;  // Nodos del roadmap
 
-    @Getter
-    @Setter
     private List<Edge> edges;  // Relaciones entre nodos
 
     public Roadmap(String ownerId, String title, String description, List<Node> nodes, List<Edge> edges) {
@@ -57,10 +49,6 @@ public class Roadmap extends AuditableAbstractAggregateRoot<Roadmap> {
     }
 
     // Metodo para agregar nodos
-    public List<Edge> getNodes() {
-        return edges;
-    }
-
     public void addNode(Node node) {
         this.nodes.add(node);
     }

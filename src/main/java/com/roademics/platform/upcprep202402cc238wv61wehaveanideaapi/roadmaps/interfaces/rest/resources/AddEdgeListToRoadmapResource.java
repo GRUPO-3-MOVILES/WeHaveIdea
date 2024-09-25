@@ -2,5 +2,5 @@ package com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.in
 
 import java.util.List;
 
-public record AddEdgeListToRoadmapResource(List<EdgeResource> edges) {
+public record AddEdgeListToRoadmapResource() { //List<EdgeResource> edges
 }
