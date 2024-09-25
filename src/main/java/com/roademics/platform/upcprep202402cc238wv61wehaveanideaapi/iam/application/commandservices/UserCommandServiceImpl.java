@@ -16,6 +16,7 @@ import java.util.Optional;
 
 @Service
 public class UserCommandServiceImpl implements UserCommandService {
+
     private final UserRepository userRepository;
     private final HashingService hashingService;
     private final TokenService tokenService;
@@ -41,7 +42,7 @@ public class UserCommandServiceImpl implements UserCommandService {
                 .map(role -> roleRepository.findByName(role.getName())
                         .orElseThrow(() -> new RuntimeException("Role not found"))).toList();
         var user = new User(command.username(), hashingService.encode(command.password()), roles);
-        userRepository.save(user);
+        //userRepository.save(user);
         return userRepository.findByUsername(command.username());
     }
 

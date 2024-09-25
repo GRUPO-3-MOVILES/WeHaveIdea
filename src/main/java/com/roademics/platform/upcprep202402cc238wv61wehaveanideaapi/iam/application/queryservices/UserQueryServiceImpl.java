@@ -1,5 +1,6 @@
 package com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.application.queryservices;
 
+import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.application.repositories.UserRepositoryImpl;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.domain.model.aggregates.User;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.domain.model.queries.GetAllUsersQuery;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.domain.model.queries.GetUserByIdQuery;
@@ -13,21 +14,21 @@ import java.util.Optional;
 
 @Service
 public class UserQueryServiceImpl implements UserQueryService {
-    private final UserRepository userRepository;
+    private final UserRepositoryImpl userRepository;
 
     public UserQueryServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
-    @Override
+    /*@Override
     public List<User> handle(GetAllUsersQuery query) {
-        return userRepository.findAll();
-    }
+        return userRepository.();
+    }*/
 
-    @Override
+    /*@Override
     public Optional<User> handle(GetUserByIdQuery query) {
-        return userRepository.findById(query.userId());
-    }
+        return userRepository.findById(query.id());
+    }*/
 
     @Override
     public Optional<User> handle(GetUserByUsernameQuery query) {
