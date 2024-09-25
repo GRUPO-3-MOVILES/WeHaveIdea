@@ -69,7 +69,7 @@ public class IamContextFacade {
      * @param userId The id of the user.
      * @return The username of the user.
      */
-    public String fetchUsernameByUserId(Long userId) {
+    public String fetchUsernameByUserId(String userId) {
         var getUserByIdQuery = new GetUserByIdQuery(userId);
         var result = userQueryService.handle(getUserByIdQuery);
         if (result.isEmpty()) return Strings.EMPTY;

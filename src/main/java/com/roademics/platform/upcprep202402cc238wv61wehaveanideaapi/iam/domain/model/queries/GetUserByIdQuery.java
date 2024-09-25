@@ -1,4 +1,4 @@
 package com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.domain.model.queries;
 
-public record GetUserByIdQuery(Long userId) {
+public record GetUserByIdQuery(String userId) {
 }

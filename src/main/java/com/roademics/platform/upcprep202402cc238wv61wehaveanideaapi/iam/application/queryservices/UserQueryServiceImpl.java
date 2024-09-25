@@ -17,18 +17,18 @@ public class UserQueryServiceImpl implements UserQueryService {
     private final UserRepositoryImpl userRepository;
 
     public UserQueryServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
+        this.userRepository = (UserRepositoryImpl) userRepository;
     }
 
-    /*@Override
+    @Override
     public List<User> handle(GetAllUsersQuery query) {
-        return userRepository.();
-    }*/
+        return userRepository.findAll();
+    }
 
-    /*@Override
+    @Override
     public Optional<User> handle(GetUserByIdQuery query) {
-        return userRepository.findById(query.id());
-    }*/
+        return userRepository.findById(query.userId());
+    }
 
     @Override
     public Optional<User> handle(GetUserByUsernameQuery query) {
