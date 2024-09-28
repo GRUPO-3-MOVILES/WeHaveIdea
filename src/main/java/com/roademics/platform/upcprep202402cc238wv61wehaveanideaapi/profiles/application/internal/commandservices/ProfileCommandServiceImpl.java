@@ -62,7 +62,7 @@ public class ProfileCommandServiceImpl implements ProfileCommandService {
 
     @Override
     public Optional<Profile> handle(UpdateProfileCommand command) {
-        Optional<Profile> existingProfile = profileRepository.findById(command.profileId());
+        Optional<Profile> existingProfile = profileRepository.findByEmail(command.email());
 
         if (existingProfile.isEmpty()) {
             return Optional.empty();  // El perfil no existe

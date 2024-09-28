@@ -52,9 +52,10 @@ public class ProfilesContextFacade {
     public Optional<Profile> updateProfile(String profileId, String firstName, String lastName,
                                            String email, String phoneNumber, Date dateOfBirth,
                                            String city, String state, String country, String zipCode, String profileType) {
-        UpdateProfileCommand command = new UpdateProfileCommand(profileId, firstName, lastName, email, phoneNumber,
-                dateOfBirth, city, state, country, zipCode, profileType);
+        UpdateProfileCommand command = new UpdateProfileCommand(firstName, lastName, email, phoneNumber,
+                zipCode, city, state, country, dateOfBirth, profileType);
         return profileCommandService.handle(command);
+
     }
 
     public List<Profile> fetchAllProfiles() {

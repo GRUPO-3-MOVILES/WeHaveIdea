@@ -1,6 +1,7 @@
 package com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.interfaces;
 
-import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.domain.model.queries.GetAllRolesQuery;
+
+import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.domain.model.queries.GetAllRolsQuery;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.domain.services.RoleQueryService;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.interfaces.rest.resources.RoleResource;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.interfaces.rest.transform.RoleResourceFromEntityAssembler;
@@ -25,7 +26,7 @@ public class RolesController {
 
     @GetMapping
     public ResponseEntity<List<RoleResource>> getAllRoles() {
-        var getAllRolesQuery = new GetAllRolesQuery();
+        var getAllRolesQuery = new GetAllRolsQuery();
         var roles = roleQueryService.handle(getAllRolesQuery);
         var roleResources = roles.stream().map(RoleResourceFromEntityAssembler::toResourceFromEntity).toList();
         return ResponseEntity.ok(roleResources);
