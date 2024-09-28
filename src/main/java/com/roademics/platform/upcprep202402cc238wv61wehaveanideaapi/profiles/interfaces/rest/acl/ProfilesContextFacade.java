@@ -53,7 +53,7 @@ public class ProfilesContextFacade {
                                            String email, String phoneNumber, Date dateOfBirth,
                                            String city, String state, String country, String zipCode, String profileType) {
         UpdateProfileCommand command = new UpdateProfileCommand(profileId, firstName, lastName, email, phoneNumber,
-                dateOfBirth, city, state, country, zipCode, profileType);
+                zipCode, city, state, country, dateOfBirth, profileType);
         return profileCommandService.handle(command);
     }
 
