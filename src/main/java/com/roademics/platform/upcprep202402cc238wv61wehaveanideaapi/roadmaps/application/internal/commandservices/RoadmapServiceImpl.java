@@ -1,72 +1,71 @@
 package com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.application.internal.commandservices;
 
+import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.application.internal.outboundservices.GeminiServiceImpl;
+import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.domain.model.aggregates.AIInteraction;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.domain.model.aggregates.Roadmap;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.domain.model.commands.CreateRoadmapCommand;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.domain.model.commands.EndRoadmapCommand;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.domain.model.commands.UpdateRoadmapCommand;
-import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.domain.model.valueobjects.PromptResponse;
-import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.domain.services.AIInteractionService;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.domain.services.RoadmapService;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.infrastructure.persistence.sdmbd.repositories.RoadmapRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class RoadmapServiceImpl implements RoadmapService {
 
     private final RoadmapRepository roadmapRepository;
-    private final AIInteractionService aiInteractionService;
-    private PromptResponse promptResponse;
+    private final GeminiServiceImpl geminiService;
 
-    public RoadmapServiceImpl(RoadmapRepository roadmapRepository, AIInteractionService aiInteractionService) {
+    @Autowired
+    public RoadmapServiceImpl(RoadmapRepository roadmapRepository, GeminiServiceImpl geminiService) {
         this.roadmapRepository = roadmapRepository;
-        this.aiInteractionService = aiInteractionService;
+        this.geminiService = geminiService;
     }
 
+    @Override
     public Roadmap handle(CreateRoadmapCommand command) {
-        // Crear nuevo Roadmap
         Roadmap roadmap = new Roadmap(command);
-
-        // Llamar al servicio de AI para obtener recomendaciones iniciales
-        String prompt = "Generar roadmap para " + promptResponse.getUserPrompt() + " con estas especificaciones: " + promptResponse.getResponse() + ".";
-        String aiResponse = "example"; //aiInteractionService.getCompletion(prompt);
-
-        // Procesar la respuesta de la AI y generar nodos y edges
-        roadmap.addNodesAndEdgesFromAIResponse(aiResponse);
-
-        // Guardar el roadmap en la base de datos
-        return roadmapRepository.save(roadmap);
+        roadmapRepository.saveRoadmap(roadmap); // Save roadmap
+        return roadmap;
     }
 
     @Override
     public Roadmap handle(UpdateRoadmapCommand command) {
-        // Obtener el roadmap existente
-        Roadmap roadmap = roadmapRepository.findById(command.roadmapId()).orElseThrow();
-
-        // Actualizar el roadmap con los nuevos datos
+        Roadmap roadmap = roadmapRepository.findById(command.roadmapId())
+                .orElseThrow(() -> new IllegalArgumentException("Roadmap no encontrado"));
         roadmap.setTitle(command.title());
         roadmap.setDescription(command.description());
-
-        return roadmapRepository.save(roadmap);
+        roadmapRepository.updateById(command.roadmapId(), roadmap);
+        return roadmap;
     }
 
     @Override
     public void handle(EndRoadmapCommand command) {
-        // Obtener el roadmap existente
-        Roadmap roadmap = roadmapRepository.findById(command.roadmapId()).orElseThrow();
-
-        // Marcar el roadmap como finalizado
-        // roadmap.setFinished(true); ???
-
-        roadmapRepository.save(roadmap);
+        Roadmap roadmap = roadmapRepository.findById(command.roadmapId())
+                .orElseThrow(() -> new IllegalArgumentException("Roadmap no encontrado"));
+        roadmap.setCompleted(true); // Mark as completed
+        roadmapRepository.updateById(command.roadmapId(), roadmap);
     }
 
     @Override
     public Roadmap getRoadmapById(String roadmapId) {
-        return roadmapRepository.findById(roadmapId).orElse(null);
+        return roadmapRepository.findById(roadmapId)
+                .orElseThrow(() -> new IllegalArgumentException("Roadmap no encontrado"));
     }
 
     @Override
     public List<Roadmap> getAllRoadmapsForUser(String userId) {
         return roadmapRepository.findAllByOwnerId(userId);
+    }
+
+    public Roadmap updateRoadmapWithAIContent(String roadmapId, String userPrompt) {
+        Roadmap roadmap = getRoadmapById(roadmapId);
+        AIInteraction aiInteraction = geminiService.getAIInteractionCompletion(userPrompt, roadmapId);
+        roadmap.addAIInteraction(aiInteraction);
+        roadmapRepository.updateById(roadmapId, roadmap); // Save the updated roadmap
+        return roadmap;
     }
 }

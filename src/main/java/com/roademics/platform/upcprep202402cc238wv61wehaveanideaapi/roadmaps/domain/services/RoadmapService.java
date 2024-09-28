@@ -18,4 +18,6 @@ public interface RoadmapService {
     Roadmap getRoadmapById(String roadmapId);
 
     List<Roadmap> getAllRoadmapsForUser(String userId);
+
+    Roadmap updateRoadmapWithAIContent(String roadmapId, String userPrompt);
 }

@@ -1,4 +1,4 @@
-package com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.application.repositories;
+package com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.application.internal.repositoriesimpl;
 
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.domain.model.entities.Role;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.domain.model.valueobjects.Roles;

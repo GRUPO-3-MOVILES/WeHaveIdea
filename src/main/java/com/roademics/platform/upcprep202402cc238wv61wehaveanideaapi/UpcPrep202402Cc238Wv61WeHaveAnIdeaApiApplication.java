@@ -10,17 +10,6 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 @Configuration
 public class UpcPrep202402Cc238Wv61WeHaveAnIdeaApiApplication{
 
-    /*
-    @Autowired
-    RoleRepository roleRepository;
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    AIRecommendationRepository aiRecommendationRepository;
-    @Autowired
-    RoadmapRepository roadmapRepository;
-    */
-
     public static void main(String[] args) {
         SpringApplication.run(UpcPrep202402Cc238Wv61WeHaveAnIdeaApiApplication.class, args);
     }

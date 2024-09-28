@@ -1,4 +1,4 @@
-package com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.application.queryservices;
+package com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.application.internal.queryservices;
 
 
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.domain.model.entities.Role;

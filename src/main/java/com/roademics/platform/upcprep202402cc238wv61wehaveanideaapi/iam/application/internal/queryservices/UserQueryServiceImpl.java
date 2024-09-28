@@ -1,6 +1,6 @@
-package com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.application.queryservices;
+package com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.application.internal.queryservices;
 
-import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.application.repositories.UserRepositoryImpl;
+import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.application.internal.repositoriesimpl.UserRepositoryImpl;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.domain.model.aggregates.User;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.domain.model.queries.GetAllUsersQuery;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.domain.model.queries.GetUserByIdQuery;

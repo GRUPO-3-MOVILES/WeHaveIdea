@@ -1,4 +1,4 @@
-package com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.application.commandservices;
+package com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.application.internal.commandservices;
 
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.application.outboundservices.hashing.HashingService;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.application.outboundservices.tokens.TokenService;

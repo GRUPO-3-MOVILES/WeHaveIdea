@@ -1,11 +1,9 @@
-package com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.application.commandservices;
+package com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.application.internal.commandservices;
 
-import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.application.repositories.RoleRepositoryImpl;
-import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.domain.model.commands.SeedRolesCommand;
+import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.application.internal.repositoriesimpl.RoleRepositoryImpl;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.domain.model.entities.Role;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.domain.model.valueobjects.Roles;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.domain.services.RoleCommandService;
-import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.infrastructure.persistence.sdmdb.repositories.RoleRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +15,7 @@ public class RoleCommandServiceImpl implements RoleCommandService {
     private final RoleRepositoryImpl roleRepository;
 
     @Override
-    public void handle(SeedRolesCommand command) {
+    public void handle() {
         try {
             Arrays.stream(Roles.values()).forEach(roleEnum -> {
                 if (!roleRepository.existsByName(roleEnum)) {
@@ -26,7 +24,7 @@ public class RoleCommandServiceImpl implements RoleCommandService {
                 }
             });
         } catch (Exception e) {
-            throw new RuntimeException("Failed to seed roles");
+            throw new RuntimeException("Failed to seed roles", e);
         }
     }
 }

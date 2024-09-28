@@ -1,20 +1,14 @@
 package com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.domain.model.entities;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Setter
-@Getter
+@Data
 public class Edge {
 
     private String fromNodeId;
-
     private String toNodeId;
-
     private String label;
-
     private String description;
-
     private String relationshipType; // Ejemplo: "Prerequisite", "Optional"
 
     public Edge(String _fromNodeId, String _toNodeId, String _label, String _description, String _relationshipType) {

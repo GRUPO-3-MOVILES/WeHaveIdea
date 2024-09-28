@@ -4,5 +4,5 @@ import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.dom
 
 import java.util.List;
 
-    public record AddNodeListToRoadmapResource(List<Node> nodes) {
+public record AddNodeListToRoadmapResource(List<Node> nodes) {
 }
