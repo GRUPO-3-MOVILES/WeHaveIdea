@@ -75,23 +75,31 @@ public class WebSecurityConfiguration {
         }));
 
         http.csrf(csrfConfigurer -> csrfConfigurer.disable())
-                .exceptionHandling(exceptionHandling -> exceptionHandling
-                        .authenticationEntryPoint(unauthorizedRequestHandler))
-                .sessionManagement(sessionManagement ->
-                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                        // Permitir acceso público a las rutas de sign-in y sign-up
+                        .requestMatchers("/sign-up", "/sign-in", "/api/v1/authentication/**").permitAll()
+
+                        // Permitir acceso público a la documentación de Swagger
                         .requestMatchers(
-                                "/api/v1/authentication/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
                                 "/swagger-resources/**",
                                 "/webjars/**").permitAll()
-                        .anyRequest().authenticated());
+
+                        // Todas las demás rutas requieren autenticación
+                        .anyRequest().authenticated())
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .authenticationEntryPoint(unauthorizedRequestHandler))
+                .sessionManagement(sessionManagement ->
+                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http.authenticationProvider(authenticationProvider());
+
+        // Añadir el filtro de autorización antes de UsernamePasswordAuthenticationFilter
         http.addFilterBefore(authorizationRequestFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
+
 }

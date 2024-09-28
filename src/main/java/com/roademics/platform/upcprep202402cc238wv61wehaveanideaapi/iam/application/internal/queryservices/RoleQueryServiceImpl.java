@@ -2,7 +2,7 @@ package com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.applica
 
 
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.domain.model.entities.Role;
-import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.domain.model.queries.GetAllRolsQuery;
+import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.domain.model.queries.GetAllRolesQuery;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.domain.model.queries.GetRoleByNameQuery;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.domain.services.RoleQueryService;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.infrastructure.persistence.sdmdb.repositories.RoleRepository;
@@ -20,7 +20,7 @@ public class RoleQueryServiceImpl implements RoleQueryService {
     }
 
     @Override
-    public List<Role> handle(GetAllRolsQuery query) {
+    public List<Role> handle(GetAllRolesQuery query) {
         return roleRepository.findAll();
     }
 
