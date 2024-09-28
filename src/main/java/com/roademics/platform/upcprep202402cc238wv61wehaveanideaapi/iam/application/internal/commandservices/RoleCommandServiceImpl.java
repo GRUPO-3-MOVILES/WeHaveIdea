@@ -1,6 +1,7 @@
 package com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.application.internal.commandservices;
 
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.application.internal.repositoriesimpl.RoleRepositoryImpl;
+import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.domain.model.commands.SeedRolesCommand;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.domain.model.entities.Role;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.domain.model.valueobjects.Roles;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.domain.services.RoleCommandService;
@@ -15,7 +16,7 @@ public class RoleCommandServiceImpl implements RoleCommandService {
     private final RoleRepositoryImpl roleRepository;
 
     @Override
-    public void handle() {
+    public void handle(SeedRolesCommand command) {
         try {
             Arrays.stream(Roles.values()).forEach(roleEnum -> {
                 if (!roleRepository.existsByName(roleEnum)) {
