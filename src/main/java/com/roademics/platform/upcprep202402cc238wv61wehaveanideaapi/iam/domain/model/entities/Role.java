@@ -1,18 +1,18 @@
 package com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.domain.model.entities;
 
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.domain.model.valueobjects.Roles;
-import lombok.Getter;
+import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
-@Getter
+@Data
 @Document(collection = "roles")
 public class Role {
 
     @Id
-    private Long id;
+    private String id;
 
     private Roles name;
 

@@ -1,32 +1,24 @@
 package com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.domain.model.entities;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+@Data
+@Document(collection = "nodes")
 public class Node {
 
-    @Getter
-    @Setter
-    private String nodeId;
+    private String nodePosition; // Ejemplo: "1", "2", "3"
 
-    @Getter
-    @Setter
     private String title; // Ejemplo: "Java", "Front-End", "Back-End"
 
-    @Getter
-    @Setter
     private String description; // Descripción del curso o nodo
 
-    @Getter
-    @Setter
     private boolean isStartNode;  // Determina si es el nodo inicial
 
-    @Getter
-    @Setter
     private boolean isEndNode;  // Determina si es el nodo final
 
     public Node(String nodeId, String title, String description, boolean isStartNode, boolean isEndNode) {
-        this.nodeId = nodeId;
+        this.nodePosition = nodeId;
         this.title = title;
         this.description = description;
         this.isStartNode = isStartNode;

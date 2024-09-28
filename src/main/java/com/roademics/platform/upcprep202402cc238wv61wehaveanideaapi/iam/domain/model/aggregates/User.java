@@ -4,14 +4,16 @@ import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.domain.m
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@Getter
+@EqualsAndHashCode(callSuper = true)
+@Data
 @Document(collection = "users")
 public class User extends AuditableAbstractAggregateRoot<User> {
 

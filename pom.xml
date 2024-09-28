@@ -21,7 +21,7 @@
  <description>upc-prep-202402-cc-238-WV61-WeHaveAnIdea-API</description>
  <url/>
  <properties>
-  <java.version>22</java.version>
+  <java.version>17</java.version>
  </properties>
 
  <dependencyManagement>
@@ -33,21 +33,22 @@
  <dependencies>
 
   <!-- MongoDB Dependencies -->
-
-  <dependency>
-   <groupId>org.mongodb</groupId>
-   <artifactId>mongodb-driver-sync</artifactId>
-   <version>4.4.0</version>
-  </dependency>
+  <!-- MongoDB starter for Spring Boot -->
   <dependency>
    <groupId>org.springframework.boot</groupId>
    <artifactId>spring-boot-starter-data-mongodb</artifactId>
   </dependency>
+
+  <!-- MongoDB Driver -->
   <dependency>
-   <groupId>org.springframework.boot</groupId>
-   <artifactId>spring-boot-starter-data-mongodb-reactive</artifactId>
+   <groupId>org.mongodb</groupId>
+   <artifactId>mongodb-driver-sync</artifactId>
   </dependency>
 
+  <dependency>
+   <groupId>org.mongodb</groupId>
+   <artifactId>bson</artifactId>
+  </dependency>
   <!-- Spring Boot Dependencies -->
 
   <dependency>
@@ -131,13 +132,6 @@
    <groupId>io.projectreactor</groupId>
    <artifactId>reactor-test</artifactId>
    <scope>test</scope>
-  </dependency>
-
-  <!-- https://mvnrepository.com/artifact/io.github.encryptorcode/pluralize -->
-  <dependency>
-   <groupId>io.github.encryptorcode</groupId>
-   <artifactId>pluralize</artifactId>
-   <version>1.0.0</version>
   </dependency>
  </dependencies>
 
