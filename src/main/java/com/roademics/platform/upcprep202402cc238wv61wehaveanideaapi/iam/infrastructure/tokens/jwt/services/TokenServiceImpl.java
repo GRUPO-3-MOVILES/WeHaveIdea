@@ -1,12 +1,9 @@
 package com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.infrastructure.tokens.jwt.services;
 
+import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.domain.services.KeyGeneratorService;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.infrastructure.tokens.jwt.BearerTokenService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureException;
-import jakarta.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,117 +11,150 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import jakarta.servlet.http.HttpServletRequest;
 import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Date;
 import java.util.function.Function;
 
 @Service
 public class TokenServiceImpl implements BearerTokenService {
-    private final Logger LOGGER = LoggerFactory.getLogger(TokenServiceImpl.class);
 
-    private static final String AUTHORIZATION_PARAMETER_NAME = "Authorization";
-    private static final String BEARER_TOKEN_PREFIX = "Bearer";
+    private static final Logger LOGGER = LoggerFactory.getLogger(TokenServiceImpl.class);
+
+    private static final String AUTHORIZATION_HEADER = "Authorization";
+    private static final String BEARER_PREFIX = "Bearer ";
     private static final int TOKEN_BEGIN_INDEX = 7;
 
-    @Value("${authorization.jwt.secret}")
-    private String secret;
+    private final SecretKey key;
 
     @Value("${authorization.jwt.expiration.days}")
     private int expirationDays;
 
+    public TokenServiceImpl(KeyGeneratorService keyGeneratorService) {
+        // Generamos la clave secreta usando Base64 decodificada
+        String secretKeyString = keyGeneratorService.generateKey();
+        this.key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secretKeyString));
+        // Log the generated key
+        LOGGER.info("Generated Key: {}", secretKeyString);
+
+    }
+
+    /**
+     * Extrae el token Bearer del encabezado HTTP Authorization
+     */
     @Override
     public String getBearerTokenFrom(HttpServletRequest request) {
-        String parameter = getAuthorizationParameterFrom(request);
-        if (isTokenPresentIn(parameter) && isBearerTokenIn(parameter))
-            return extractTokenFrom(parameter);
+        String authHeader = request.getHeader(AUTHORIZATION_HEADER);
+        LOGGER.info("Authorization Header: {}", authHeader);
+        if (isTokenPresent(authHeader) && isBearerToken(authHeader)) {
+            return extractToken(authHeader);
+        }
         return null;
     }
 
+
+    /**
+     * Genera un JWT basado en la autenticación del usuario
+     */
     @Override
     public String generateToken(Authentication authentication) {
-        return buildTokenWithDefaultParameters(authentication.getName());
+        return buildToken(authentication.getName());
     }
 
+    /**
+     * Genera un JWT basado en el nombre de usuario
+     */
     @Override
     public String generateToken(String username) {
-        return buildTokenWithDefaultParameters(username);
+        return buildToken(username);
     }
 
+    /**
+     * Valida el JWT y verifica si es legítimo
+     */
     @Override
     public boolean validateToken(String token) {
+        LOGGER.info("Validating Token: {}", token);
         try {
-            Jwts.parser()
-                    .verifyWith(getSigningKey())
+            Jws<Claims> claims = Jwts.parserBuilder()
+                    .setSigningKey(key)
                     .build()
-                    .parseSignedClaims(token);
-            LOGGER.info("JSON Web Token is valid");
+                    .parseClaimsJws(token);
+            Date expiration = claims.getBody().getExpiration();
+            LOGGER.info("Token Expiration: {}", expiration);
             return true;
-        } catch (SignatureException e) {
-            LOGGER.error("Invalid JSON Web Token signature: {}", e.getMessage());
-        } catch (MalformedJwtException e) {
-            LOGGER.error("Invalid JSON Web Token: {}", e.getMessage());
         } catch (ExpiredJwtException e) {
-            LOGGER.error("Expired JSON Web Token: {}", e.getMessage());
-        } catch (UnsupportedJwtException e) {
-            LOGGER.error("JSON Web Token is unsupported: {}", e.getMessage());
-        } catch (IllegalArgumentException e) {
-            LOGGER.error("JSON Web Token claims string is empty: {}", e.getMessage());
+            LOGGER.error("Expired JWT Token: {}", e.getMessage());
+        } catch (JwtException e) {
+            LOGGER.error("Invalid JSON Web Token: {}", e.getMessage());
         }
         return false;
     }
 
+
+
+    /**
+     * Extrae el nombre de usuario (subject) del token JWT
+     */
     @Override
     public String getUsernameFromToken(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
-    // Private methods
-    private String buildTokenWithDefaultParameters(String username) {
-        var issuedAt = new Date();
-        var expiration = DateUtils.addDays(issuedAt, expirationDays);
-        var key = getSigningKey();
+    // Métodos Privados
+
+    /**
+     * Construye un JWT con los parámetros por defecto.
+     */
+    private String buildToken(String username) {
+        Date issuedAt = new Date();
+        Date expiration = new Date(issuedAt.getTime() + expirationDays * 86400000L);  // Expira en "expirationDays"
         return Jwts.builder()
-                .subject(username)
-                .issuedAt(issuedAt)
-                .expiration(expiration)
-                .signWith(key)
+                .setSubject(username)
+                .setIssuedAt(issuedAt)
+                .setExpiration(expiration)
+                .signWith(key)  // Firma con la clave secreta
                 .compact();
     }
 
-    private SecretKey getSigningKey() {
-        byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
-        return Keys.hmacShaKeyFor(keyBytes);
-    }
-
+    /**
+     * Extrae todas las "claims" del token JWT.
+     */
     private Claims extractAllClaims(String token) {
-        return Jwts.parser()
-                .verifyWith(getSigningKey())
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
                 .build()
-                .parseSignedClaims(token)
-                .getPayload();
+                .parseClaimsJws(token)
+                .getBody();
     }
 
-    private <T> T extractClaim(String token, Function<Claims, T> claimsResolvers) {
-        final Claims claims = extractAllClaims(token);
-        return claimsResolvers.apply(claims);
+    /**
+     * Extrae una "claim" específica del token JWT.
+     */
+    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
     }
 
-    private boolean isTokenPresentIn(String authorizationParameter) {
-        return StringUtils.hasText(authorizationParameter);
+    /**
+     * Verifica si el encabezado de autorización contiene un token.
+     */
+    private boolean isTokenPresent(String authHeader) {
+        return StringUtils.hasText(authHeader);
     }
 
-    private boolean isBearerTokenIn(String authorizationParameter) {
-        return authorizationParameter.startsWith(BEARER_TOKEN_PREFIX);
+    /**
+     * Verifica si el token presente en el encabezado tiene el prefijo "Bearer".
+     */
+    private boolean isBearerToken(String authHeader) {
+        return authHeader.startsWith(BEARER_PREFIX);
     }
 
-    private String extractTokenFrom(String authorizationParameter) {
-        return authorizationParameter.substring(TOKEN_BEGIN_INDEX);
+    /**
+     * Extrae el token del encabezado de autorización, omitiendo el prefijo "Bearer".
+     */
+    private String extractToken(String authHeader) {
+        return authHeader.substring(TOKEN_BEGIN_INDEX);
     }
-
-    private String getAuthorizationParameterFrom(HttpServletRequest request) {
-        return request.getHeader(AUTHORIZATION_PARAMETER_NAME);
-    }
-
 }
-
