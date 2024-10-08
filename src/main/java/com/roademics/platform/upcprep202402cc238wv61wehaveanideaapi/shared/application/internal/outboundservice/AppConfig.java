@@ -3,16 +3,15 @@ package com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.shared.appl
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.infrastructure.authorization.sfs.pipeline.BearerAuthorizationRequestFilter;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.infrastructure.authorization.sfs.pipeline.UnauthorizedRequestHandlerEntryPoint;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.shared.interfaces.rest.resources.GeminiInterface;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,21 +25,11 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 @EnableMethodSecurity
 public class AppConfig {
 
-    @Autowired
-    @Lazy
-    @Qualifier("customPasswordEncoder")
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    @Lazy
-    @Qualifier("CustomAuthenticationProvider")
-    private AuthenticationManager authenticationManager;
-
     private final BearerAuthorizationRequestFilter bearerAuthorizationRequestFilter;
     private final UnauthorizedRequestHandlerEntryPoint unauthorizedRequestHandlerEntryPoint;
 
     public AppConfig(BearerAuthorizationRequestFilter bearerAuthorizationRequestFilter,
-                          UnauthorizedRequestHandlerEntryPoint unauthorizedRequestHandlerEntryPoint) {
+                     UnauthorizedRequestHandlerEntryPoint unauthorizedRequestHandlerEntryPoint) {
         this.bearerAuthorizationRequestFilter = bearerAuthorizationRequestFilter;
         this.unauthorizedRequestHandlerEntryPoint = unauthorizedRequestHandlerEntryPoint;
     }
@@ -49,7 +38,7 @@ public class AppConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 // Desactivar CSRF para tokens JWT
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 // Configurar autorización de solicitudes
                 .authorizeHttpRequests(auth -> auth
                         // Permitir sin autenticación estas rutas
@@ -82,9 +71,9 @@ public class AppConfig {
 
     @Bean
     public RestClient GeminiRestClient(@Value("${gemini.api.url}") String _baseUrl, @Value("${gemini.api.key}") String _apiKey) {
-
         return RestClient.builder()
                 .baseUrl(_baseUrl)
+                .defaultHeader("Authorization", "Bearer " + _apiKey) // Incluye el encabezado de autorización con la API Key
                 .defaultHeader("Accept", "application/json")
                 .defaultHeader("Content-Type", "application/json")
                 .build();
@@ -97,4 +86,3 @@ public class AppConfig {
         return factory.createClient(GeminiInterface.class);
     }
 }
-

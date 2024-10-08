@@ -2,14 +2,17 @@ package com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.do
 
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.domain.model.entities.Edge;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.domain.model.entities.Node;
+import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Document(collection = "ai_interactions")
-public class AIInteraction {
+public class AIInteraction extends AuditableAbstractAggregateRoot<AIInteraction> {
 
     private String roadmapId;
     private List<Node> nodes;
@@ -22,22 +25,6 @@ public class AIInteraction {
         this.edges = edges;
     }
 
-    // Metodo para fusionar nodos y aristas en un roadmap existente
-    public void integrateWithRoadmap(Roadmap roadmap) {
-        // Iterar sobre los nodos y agregar los que no existen en el roadmap
-        for (Node node : this.nodes) {
-            if (!roadmap.getNodes().contains(node)) {
-                roadmap.addNode(node);
-            }
-        }
-
-        // Iterar sobre las edges y agregar las que no existen en el roadmap
-        for (Edge edge : this.edges) {
-            if (!roadmap.getEdges().contains(edge)) {
-                roadmap.addEdge(edge);
-            }
-        }
-    }
 }
 
 

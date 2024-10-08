@@ -2,5 +2,5 @@ package com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.interfa
 
 import java.util.List;
 
-public record UserResource(Long id, String username, List<String> roles) {
+public record UserResource(String id, String username, List<String> roles) {
 }
