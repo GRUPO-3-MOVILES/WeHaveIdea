@@ -1,5 +1,7 @@
 package com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.domain.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
@@ -11,11 +13,16 @@ public class Edge {
     private String description;
     private String relationshipType; // Ejemplo: "Prerequisite", "Optional"
 
-    public Edge(String _fromNodeId, String _toNodeId, String _label, String _description, String _relationshipType) {
-        this.fromNodeId = _fromNodeId;
-        this.toNodeId = _toNodeId;
-        this.label = _label;
-        this.description = _description;
-        this.relationshipType = _relationshipType;
+    @JsonCreator
+    public Edge(@JsonProperty("fromNodeId") String fromNodeId,
+                @JsonProperty("toNodeId") String toNodeId,
+                @JsonProperty("label") String label,
+                @JsonProperty("description") String description,
+                @JsonProperty("relationshipType") String relationshipType) {
+        this.fromNodeId = fromNodeId;
+        this.toNodeId = toNodeId;
+        this.label = label;
+        this.description = description;
+        this.relationshipType = relationshipType;
     }
 }

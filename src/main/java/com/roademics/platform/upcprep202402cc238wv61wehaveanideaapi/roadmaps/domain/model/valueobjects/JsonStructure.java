@@ -16,9 +16,6 @@ public class JsonStructure {
     @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
     public record InLineDataPart(String text, String role) implements Part{}
 
-    @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-    public record  InLineData(String mimeType, String data) {}
-
     public record GeminiResponse(List<Candidate> candidates,
                                  PromptFeedback promptFeedback) {
         public record Candidate(Content content,

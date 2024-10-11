@@ -1,12 +1,16 @@
 package com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.application.internal.outboundservices;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.domain.model.aggregates.AIInteraction;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.domain.model.entities.Edge;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.domain.model.entities.Node;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.domain.model.valueobjects.JsonStructure;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.shared.interfaces.rest.resources.GeminiInterface;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,18 +19,17 @@ import java.util.List;
 public class GeminiServiceImpl {
 
     private final GeminiInterface geminiInterface;
+    private static final Logger LOGGER = LoggerFactory.getLogger(GeminiServiceImpl.class);
+    private final ObjectMapper objectMapper = new ObjectMapper();  // Reutilizamos el ObjectMapper
 
     @Autowired
     public GeminiServiceImpl(GeminiInterface geminiInterface) {
         this.geminiInterface = geminiInterface;
     }
 
-    // Metodo principal para obtener la interacción AI (nodos y aristas) desde Gemini
+    // Obtener la interacción AI (nodos y aristas) desde Gemini
     public AIInteraction getAIInteractionCompletion(String userPrompt, String roadmapId) {
-        // Construir el prompt completo con las instrucciones detalladas
         String fullPrompt = buildPrompt(userPrompt);
-
-        // Crear la solicitud a Gemini API con el prompt completo
         JsonStructure.GeminiRequest request = new JsonStructure.GeminiRequest(
                 List.of(new JsonStructure.Content(List.of(new JsonStructure.TextPart(fullPrompt))))
         );
@@ -42,78 +45,72 @@ public class GeminiServiceImpl {
         return new AIInteraction(roadmapId, nodes, edges);
     }
 
-    // Metodo para construir el prompt con instrucciones detalladas para la API
+    // Construir el prompt con instrucciones detalladas para la API
     private String buildPrompt(String userPrompt) {
-        return userPrompt + "\n\n" +
-                "Genera una lista de nodos y conexiones para un roadmap de aprendizaje en programación en Java. " +
-                "La lista debe estar en formato JSON y debe incluir:\n" +
-                "1. Un arreglo de nodos (`nodes`), donde cada nodo tenga las siguientes propiedades:\n" +
-                "- `nodeId`: Identificador único del nodo.\n" +
-                "- `title`: El título del nodo que describe un tema (Ej: 'Java Basics', 'OOP in Java').\n" +
-                "- `description`: Breve descripción del nodo.\n" +
-                "- `isStartNode`: Booleano que indique si es el nodo inicial del roadmap.\n" +
-                "- `isEndNode`: Booleano que indique si es el nodo final del roadmap.\n" +
-                "2. Un arreglo de conexiones (`edges`), donde cada conexión tenga las siguientes propiedades:\n" +
-                "- `fromNodeId`: El `nodeId` del nodo de origen.\n" +
-                "- `toNodeId`: El `nodeId` del nodo de destino.\n" +
-                "- `label`: Relación entre los nodos (Ej: 'Prerequisite').\n" +
-                "- `description`: Breve descripción de la relación entre los nodos.\n" +
-                "- `relationshipType`: Tipo de relación (Ej: 'Prerequisite', 'Optional').\n" +
-                "Por favor responde solo con el JSON.";
+        return userPrompt + "\n" +
+                "A continuación, necesito que generes un roadmap de aprendizaje en programación. " +
+                "La salida debe estar estrictamente en formato JSON y debe contener dos estructuras principales: " +
+                "`nodes` (los pasos o temas a cubrir) y `edges` (las relaciones entre los temas). La salida debe incluir lo siguiente: " +
+                "1. nodes: Un arreglo de nodos, donde cada nodo tiene las siguientes propiedades: " +
+                "- `nodeId`: Un identificador único para cada nodo, como un número o un string. " +
+                "- `title`: El título que describe el tema principal del nodo (Ejemplo: 'Introducción a Java'). " +
+                "- `description`: Una breve descripción del nodo que explique de qué trata. " +
+                "- `isStartNode`: Un valor booleano (`true` o `false`) que indica si es el nodo inicial del roadmap. " +
+                "- `isEndNode`: Un valor booleano (`true` o `false`) que indica si es el nodo final del roadmap. " +
+                "2. edges: Un arreglo de conexiones entre los nodos, donde cada conexión tiene las siguientes propiedades: " +
+                "- `fromNodeId`: El `nodeId` del nodo de origen. " +
+                "- `toNodeId`: El `nodeId` del nodo de destino. " +
+                "- `label`: Una breve descripción de la relación entre los nodos. " +
+                "- `description`: Explicación del motivo por el cual el nodo de origen está relacionado con el nodo de destino. " +
+                "- `relationshipType`: El tipo de relación entre los nodos ('Prerequisite', 'Optional').";
     }
 
-    // Metodo para extraer nodos desde la respuesta de Gemini
+    // Extraer nodos desde la respuesta de Gemini
     private List<Node> extractNodesFromGeminiResponse(JsonStructure.GeminiResponse response) {
-        // Extraer nodos desde la respuesta de Gemini
         List<Node> nodes = new ArrayList<>();
+
         for (JsonStructure.GeminiResponse.Candidate candidate : response.candidates()) {
-            String nodeText = candidate.content().parts().get(0).text(); // Obtener el texto del nodo
-            Node node = new Node(generateNodePosition(candidate), nodeText, nodeText, false, false);
-            nodes.add(node); // Agregar el nodo a la lista
+            try {
+                String nodeText = cleanJsonText(candidate.content().parts().get(0).text());
+                JsonNode jsonNode = objectMapper.readTree(nodeText);
+
+                if (jsonNode.has("nodes")) {
+                    for (JsonNode nodeElement : jsonNode.get("nodes")) {
+                        Node node = objectMapper.treeToValue(nodeElement, Node.class);
+                        nodes.add(node);
+                    }
+                }
+            } catch (Exception e) {
+                LOGGER.error("Error parsing nodes from Gemini response: {}", e.getMessage());
+            }
         }
         return nodes;
     }
 
-    // Metodo para extraer aristas (edges) desde la respuesta de Gemini
+    // Extraer aristas (edges) desde la respuesta de Gemini
     private List<Edge> extractEdgesFromGeminiResponse(JsonStructure.GeminiResponse response) {
         List<Edge> edges = new ArrayList<>();
 
-        // Aquí asumimos que los edges son relaciones entre nodos que podemos inferir de los "candidates"
-        for (int i = 0; i < response.candidates().size() - 1; i++) {
-            // Extraer nodos consecutivos para generar una relación
-            Node fromNode = new Node(
-                    generateNodePosition(response.candidates().get(i)),
-                    response.candidates().get(i).content().parts().get(0).text(),
-                    response.candidates().get(i).content().parts().get(0).text(),
-                    false,
-                    false
-            );
+        for (JsonStructure.GeminiResponse.Candidate candidate : response.candidates()) {
+            try {
+                String edgeText = cleanJsonText(candidate.content().parts().get(0).text());
+                JsonNode jsonNode = objectMapper.readTree(edgeText);
 
-            Node toNode = new Node(
-                    generateNodePosition(response.candidates().get(i + 1)),
-                    response.candidates().get(i + 1).content().parts().get(0).text(),
-                    response.candidates().get(i + 1).content().parts().get(0).text(),
-                    false,
-                    false
-            );
-
-            // Crear una nueva arista que conecta estos dos nodos
-            Edge edge = new Edge(
-                    fromNode.getNodePosition(), // Nodo de origen
-                    toNode.getNodePosition(),   // Nodo de destino
-                    "Prerequisite", // Etiqueta para esta relación
-                    "Se requiere conocimiento del nodo previo", // Descripción básica
-                    "Prerequisite" // Tipo de relación
-            );
-
-            edges.add(edge); // Agregar la arista a la lista
+                if (jsonNode.has("edges")) {
+                    for (JsonNode edgeElement : jsonNode.get("edges")) {
+                        Edge edge = objectMapper.treeToValue(edgeElement, Edge.class);
+                        edges.add(edge);
+                    }
+                }
+            } catch (Exception e) {
+                LOGGER.error("Error parsing edges from Gemini response: {}", e.getMessage());
+            }
         }
-
         return edges;
     }
 
-    // Metodo para generar la posición del nodo (usamos el índice del candidato para esto)
-    private String generateNodePosition(JsonStructure.GeminiResponse.Candidate candidate) {
-        return String.valueOf(candidate.index()); // Genera un ID basado en el índice del candidato
+    // Limpiar el texto JSON de backticks y etiquetas de bloque de código
+    private String cleanJsonText(String text) {
+        return text.replaceAll("```", "").replaceAll("json", "").trim();
     }
 }

@@ -70,10 +70,12 @@ public class AppConfig {
     }
 
     @Bean
-    public RestClient GeminiRestClient(@Value("${gemini.api.url}") String _baseUrl, @Value("${gemini.api.key}") String _apiKey) {
+    public RestClient GeminiRestClient(@Value("${gemini.api.url}") String baseUrl, @Value("${gemini.api.key}") String apiKey) {
+        // Concatenar la API Key como parte del query string en la URL
+        String fullUrl = baseUrl + "/v1beta/models/gemini-1.5-flash-latest:generateContent?key=" + apiKey;
+
         return RestClient.builder()
-                .baseUrl(_baseUrl)
-                .defaultHeader("Authorization", "Bearer " + _apiKey) // Incluye el encabezado de autorización con la API Key
+                .baseUrl(fullUrl) // Usar la URL completa que incluye el API Key como parámetro
                 .defaultHeader("Accept", "application/json")
                 .defaultHeader("Content-Type", "application/json")
                 .build();
