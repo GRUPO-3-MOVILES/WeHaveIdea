@@ -1,0 +1,5 @@
+[build]
+commands = [
+    "chmod +x ./mvnw",      # Give executable permission to mvnw
+    "./mvnw clean install"  # Run the Maven build
+]
