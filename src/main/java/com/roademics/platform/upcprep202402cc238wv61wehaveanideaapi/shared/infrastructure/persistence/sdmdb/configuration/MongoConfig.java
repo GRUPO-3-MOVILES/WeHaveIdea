@@ -14,6 +14,9 @@ public class MongoConfig {
     @Value("${spring.data.mongodb.uri}")
     private String mongoUri;
 
+    @Value("${spring.data.mongodb.database}")
+    private String databaseName;  // Inyectar el nombre de la base de datos desde application.properties
+
     private MongoClient mongoClient;
 
     @Bean
@@ -24,8 +27,10 @@ public class MongoConfig {
 
     @Bean
     public MongoTemplate mongoTemplate() {
-        return new MongoTemplate(mongoClient(), "roademics-database");
+        System.out.println("Using database: " + databaseName);  // Para verificar el valor inyectado
+        return new MongoTemplate(mongoClient(), databaseName);
     }
+
 
     @PreDestroy
     public void closeMongoClient() {

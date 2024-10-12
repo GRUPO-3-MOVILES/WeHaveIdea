@@ -84,20 +84,13 @@ public class WebSecurityConfiguration {
         // Desactivar CSRF, ya que JWT se utiliza para proteger las solicitudes
         http.csrf(AbstractHttpConfigurer::disable)
         // Asegurarse de que las rutas no protegidas estén configuradas correctamente
-
-
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
 
                         // Permitir acceso público a las rutas de autenticación
                         .requestMatchers("/api/authentication/sign-in", "/api/authentication/sign-up", "/api/ai-interactions/start", "/api/ai-interactions/send-prompt", "/api/ai-interactions/end").permitAll()
 
                         // Permitir acceso público a la documentación de Swagger
-                        .requestMatchers(
-                                "/v3/api-docs/**",
-                                "/swagger-ui.html",
-                                "/swagger-ui/**",
-                                "/swagger-resources/**",
-                                "/webjars/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**", "/swagger-resources/**", "/webjars/**").permitAll()
 
                         // Todas las demás rutas requieren autenticación
                         .anyRequest().authenticated()
