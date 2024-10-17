@@ -48,7 +48,7 @@ public class GeminiServiceImpl {
     // Construir el prompt con instrucciones detalladas para la API
     private String buildPrompt(String userPrompt) {
         return userPrompt + "\n" +
-                "A continuación, necesito que generes un roadmap de aprendizaje en programación. " +
+                "A continuación, necesito que generes un roadmap de aprendizaje. " +
                 "La salida debe estar estrictamente en formato JSON y debe contener dos estructuras principales: " +
                 "`nodes` (los pasos o temas a cubrir) y `edges` (las relaciones entre los temas). La salida debe incluir lo siguiente: " +
                 "1. nodes: Un arreglo de nodos, donde cada nodo tiene las siguientes propiedades: " +
@@ -62,7 +62,7 @@ public class GeminiServiceImpl {
                 "- `toNodeId`: El `nodeId` del nodo de destino. " +
                 "- `label`: Una breve descripción de la relación entre los nodos. " +
                 "- `description`: Explicación del motivo por el cual el nodo de origen está relacionado con el nodo de destino. " +
-                "- `relationshipType`: El tipo de relación entre los nodos ('Prerequisite', 'Optional').";
+                "- `relationshipType`: El tipo de relación entre los nodos ('Prerequisite', 'Optional', 'etc').";
     }
 
     // Extraer nodos desde la respuesta de Gemini
