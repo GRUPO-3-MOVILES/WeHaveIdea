@@ -61,27 +61,14 @@ public class WebSecurityConfiguration {
     }
 
     @Bean
-    public CorsFilter corsFilter() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration();
-
-        config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of("*")); // En producción, limita los orígenes permitidos
-        config.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-
-        source.registerCorsConfiguration("/**", config);
-        return new CorsFilter(source);
-    }
-
-    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors(configurer -> {
             configurer.configurationSource(c -> {
                 var cors = new CorsConfiguration();
-                cors.setAllowedOrigins(List.of("*"));
+                cors.setAllowedOrigins(List.of("*")); // En producción, deberías limitar los orígenes permitidos
                 cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                cors.setAllowedHeaders(List.of("*"));
+                cors.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
+                cors.setAllowCredentials(true);  // Permitir enviar credenciales (si es necesario)
                 return cors;
             });
         });
@@ -100,4 +87,5 @@ public class WebSecurityConfiguration {
         http.addFilterBefore(authorizationRequestFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
+
 }
