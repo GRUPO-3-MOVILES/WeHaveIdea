@@ -17,24 +17,10 @@ public class AIInteractionController {
         this.aiInteractionService = aiInteractionService;
     }
 
-    // Iniciar una interacción de IA
-    @PostMapping("/start")
-    public ResponseEntity<AIInteraction> startAIInteraction(@RequestParam String profileId, @RequestParam String conversationId) {
-        AIInteraction interaction = aiInteractionService.startAIInteraction(profileId, conversationId);
-        return ResponseEntity.ok(interaction);
-    }
-
     // Enviar un prompt a la IA (Gemini)
     @PostMapping("/send-prompt")
     public ResponseEntity<AIInteraction> sendPromptToAI(@RequestParam String conversationId, @RequestBody String prompt) {
         AIInteraction interaction = aiInteractionService.sendPromptToAI(prompt, conversationId);
-        return ResponseEntity.ok(interaction);
-    }
-
-    // Finalizar una interacción de IA
-    @PostMapping("/end")
-    public ResponseEntity<AIInteraction> endAIInteraction(@RequestParam String conversationId) {
-        AIInteraction interaction = aiInteractionService.endAIInteraction(conversationId);
         return ResponseEntity.ok(interaction);
     }
 }
