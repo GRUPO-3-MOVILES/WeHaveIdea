@@ -17,7 +17,7 @@ public interface RoadmapService {
 
     List<Roadmap> getAllRoadmapsForUser(String userId);
 
-    Optional<Roadmap> updateRoadmapWithAIContent(Roadmap roadmap, String InteractionMade);
+    void updateRoadmapWithAIContent(Roadmap roadmap, String InteractionMade);
 
     Optional<Roadmap> getRoadmapByTitle(String title);
 

@@ -52,15 +52,13 @@ public class RoadmapServiceImpl implements RoadmapService {
     }
 
     @Override
-    public Optional<Roadmap> updateRoadmapWithAIContent(Roadmap roadmap, String interactionMadeId) {
+    public void updateRoadmapWithAIContent(Roadmap roadmap, String interactionMadeId) {
         AIInteraction interactionMade = aiInteractionService.getAIInteractionById(interactionMadeId)
                 .orElseThrow(() -> new IllegalArgumentException("AIInteraction not found"));
         if (roadmap != null) {
             roadmap.addAIInteraction(interactionMade);
             roadmapRepository.updateById(roadmap.getId(), roadmap); // Save the updated roadmap
-            return Optional.of(roadmap);
         }
-        return Optional.empty();
     }
 
     @Override

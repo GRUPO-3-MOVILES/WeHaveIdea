@@ -48,7 +48,9 @@ public class WebSecurityConfiguration {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() { return hashingService;}
+    public PasswordEncoder passwordEncoder() {
+        return hashingService;
+    }
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
@@ -83,5 +85,4 @@ public class WebSecurityConfiguration {
         http.addFilterBefore(authorizationRequestFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
 }
