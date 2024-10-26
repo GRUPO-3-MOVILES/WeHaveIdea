@@ -2,8 +2,8 @@ package com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.shared.doma
 
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.domain.AbstractAggregateRoot;
 import org.springframework.data.mongodb.core.mapping.Document;
 

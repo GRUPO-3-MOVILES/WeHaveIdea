@@ -18,6 +18,7 @@ import java.util.List;
 @RequestMapping(value = "/api/roles", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Roles", description = "Role Management Endpoints")
 public class RolesController {
+
     private final RoleQueryService roleQueryService;
 
     public RolesController(RoleQueryService roleQueryService) {

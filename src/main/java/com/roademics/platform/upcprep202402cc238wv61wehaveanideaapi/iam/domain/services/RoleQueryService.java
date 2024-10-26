@@ -1,7 +1,6 @@
 package com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.domain.services;
 
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.domain.model.entities.Role;
-
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.domain.model.queries.GetAllRolesQuery;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.domain.model.queries.GetRoleByNameQuery;
 

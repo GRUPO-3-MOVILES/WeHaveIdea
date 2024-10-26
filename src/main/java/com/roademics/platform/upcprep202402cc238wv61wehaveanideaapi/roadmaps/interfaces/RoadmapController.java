@@ -1,6 +1,5 @@
 package com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.interfaces;
 
-import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.application.internal.commandservices.RoadmapServiceImpl;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.domain.model.aggregates.Roadmap;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.domain.model.commands.CreateRoadmapCommand;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.domain.model.commands.UpdateRoadmapCommand;
@@ -10,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/roadmaps")
@@ -18,7 +18,7 @@ public class RoadmapController {
     private final RoadmapService roadmapService;
 
     @Autowired
-    public RoadmapController(RoadmapServiceImpl roadmapService) {
+    public RoadmapController(RoadmapService roadmapService) {
         this.roadmapService = roadmapService;
     }
 
@@ -32,15 +32,15 @@ public class RoadmapController {
     // Actualizar un roadmap existente
     @PutMapping("/update")
     public ResponseEntity<Roadmap> updateRoadmap(@RequestBody UpdateRoadmapCommand command) {
-        Roadmap roadmap = roadmapService.handle(command);
-        return ResponseEntity.ok(roadmap);
+        Optional<Roadmap> roadmap = roadmapService.handle(command);
+        return roadmap.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     // Obtener un roadmap por ID
     @GetMapping("/{roadmapId}")
     public ResponseEntity<Roadmap> getRoadmapById(@PathVariable String roadmapId) {
-        Roadmap roadmap = roadmapService.getRoadmapById(roadmapId);
-        return ResponseEntity.ok(roadmap);
+        Optional<Roadmap> roadmap = roadmapService.getRoadmapById(roadmapId);
+        return roadmap.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     // Obtener todos los roadmaps para un usuario
@@ -50,10 +50,16 @@ public class RoadmapController {
         return ResponseEntity.ok(roadmaps);
     }
 
-    // Actualizar un roadmap con nodos y conexiones generados por IA (Gemini)
-    @PutMapping("/{roadmapId}/update-ai")
-    public ResponseEntity<Roadmap> updateRoadmapWithAI(@PathVariable String roadmapId, @RequestBody String prompt) {
-        Roadmap roadmap = roadmapService.updateRoadmapWithAIContent(roadmapId, prompt);
-        return ResponseEntity.ok(roadmap);
+    // After
+    @GetMapping("/title/{title}")
+    public ResponseEntity<Roadmap> getRoadmapByTitle(@PathVariable String title) {
+        Optional<Roadmap> roadmap = roadmapService.getRoadmapByTitle(title);
+        return roadmap.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteRoadmapById(@PathVariable String id) {
+        roadmapService.deleteRoadmap(id);
+        return ResponseEntity.noContent().build();
     }
 }

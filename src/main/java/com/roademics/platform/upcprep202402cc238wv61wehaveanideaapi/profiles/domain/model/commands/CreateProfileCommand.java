@@ -4,5 +4,5 @@ import java.util.Date;
 
 public record CreateProfileCommand(String city, String state, String country, String zipCode
                                     , String phoneNumber, String email, String firstName, String lastName,
-                                   Date dateOfBirth, String profileType) {
+                                   Date dateOfBirth, String biography, String profileType) {
 }

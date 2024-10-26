@@ -14,6 +14,7 @@ import java.util.Optional;
 
 @Service
 public class UserQueryServiceImpl implements UserQueryService {
+
     private final UserRepositoryImpl userRepository;
 
     public UserQueryServiceImpl(UserRepository userRepository) {

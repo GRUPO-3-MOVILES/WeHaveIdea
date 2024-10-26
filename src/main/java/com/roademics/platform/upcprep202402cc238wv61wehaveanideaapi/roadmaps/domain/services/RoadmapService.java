@@ -2,22 +2,24 @@ package com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.do
 
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.domain.model.aggregates.Roadmap;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.domain.model.commands.CreateRoadmapCommand;
-import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.domain.model.commands.EndRoadmapCommand;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.domain.model.commands.UpdateRoadmapCommand;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface RoadmapService {
 
     Roadmap handle(CreateRoadmapCommand command);
 
-    Roadmap handle(UpdateRoadmapCommand command);
+    Optional<Roadmap> handle(UpdateRoadmapCommand command);
 
-    void handle(EndRoadmapCommand command);
-
-    Roadmap getRoadmapById(String roadmapId);
+    Optional<Roadmap> getRoadmapById(String roadmapId);
 
     List<Roadmap> getAllRoadmapsForUser(String userId);
 
-    Roadmap updateRoadmapWithAIContent(String roadmapId, String userPrompt);
+    Optional<Roadmap> updateRoadmapWithAIContent(Roadmap roadmap, String InteractionMade);
+
+    Optional<Roadmap> getRoadmapByTitle(String title);
+
+    void deleteRoadmap(String id);
 }

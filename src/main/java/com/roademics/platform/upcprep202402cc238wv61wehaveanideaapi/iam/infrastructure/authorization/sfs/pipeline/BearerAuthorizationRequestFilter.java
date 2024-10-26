@@ -15,20 +15,26 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Bearer Authorization Request Filter.
  * <p>
- * This class is responsible for filtering requests and setting the user authentication.
- * It extends the OncePerRequestFilter class.
+ * Este filtro es responsable de filtrar las solicitudes y establecer la autenticación del usuario.
+ * Extiende la clase OncePerRequestFilter.
  * </p>
  * @see OncePerRequestFilter
  */
 public class BearerAuthorizationRequestFilter extends OncePerRequestFilter {
 
+    // Definimos las rutas exactas de Swagger que no requieren autenticación
+    private static final List<String> SWAGGER_PATHS = Arrays.asList(
+            "/swagger-ui/index.html"
+    );
+
     private static final Logger LOGGER = LoggerFactory.getLogger(BearerAuthorizationRequestFilter.class);
     private final BearerTokenService tokenService;
-
 
     @Qualifier("defaultUserDetailsService")
     private final UserDetailsService userDetailsService;
@@ -39,29 +45,58 @@ public class BearerAuthorizationRequestFilter extends OncePerRequestFilter {
     }
 
     /**
-     * This method is responsible for filtering requests and setting the user authentication.
-     * @param request The request object.
-     * @param response The response object.
-     * @param filterChain The filter chain object.
+     * Este método es responsable de filtrar las solicitudes y establecer la autenticación del usuario.
+     * @param request El objeto de solicitud.
+     * @param response El objeto de respuesta.
+     * @param filterChain La cadena de filtros.
      */
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
         try {
+            String requestURI = request.getRequestURI();
+
+            // Excluir todas las rutas de Swagger y recursos estáticos
+            if (requestURI.startsWith("/swagger-ui") || requestURI.startsWith("/v3/api-docs")) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            // Excluir las rutas de autenticación (sign-in, sign-up) para que no requieran token
+            if (requestURI.equals("/api/authentication/sign-in") || requestURI.equals("/api/authentication/sign-up")) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            // Obtener el token del encabezado Authorization
             String token = tokenService.getBearerTokenFrom(request);
-            LOGGER.info("Token: {}", token);
-            if (token != null && tokenService.validateToken(token)) {
+
+            // Evitar registrar el token para recursos estáticos (JS, CSS, imágenes, etc.)
+            if (requestURI.endsWith(".html") || requestURI.endsWith(".js") || requestURI.endsWith(".css") ||
+                    requestURI.endsWith(".png") || requestURI.endsWith(".jpg") || requestURI.endsWith(".jpeg") ||
+                    requestURI.endsWith(".gif") || requestURI.endsWith(".svg") || requestURI.endsWith(".woff2")) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            // Si el token es nulo, solo registrar "Token: null"
+            if (token == null) {
+                LOGGER.info("Token: null");
+            } else if (!tokenService.validateToken(token)) {
+                // Si el token está presente pero no es válido, registrar "Token is not valid"
+                LOGGER.info("Token is not valid");
+            } else {
+                // Si el token es válido, establecer la autenticación
                 String username = tokenService.getUsernameFromToken(token);
                 var userDetails = userDetailsService.loadUserByUsername(username);
                 SecurityContextHolder.getContext().setAuthentication(
                         UsernamePasswordAuthenticationTokenBuilder.build(userDetails, request));
-            } else {
-                LOGGER.info("Token is not valid");
             }
 
         } catch (Exception e) {
             LOGGER.error("Cannot set user authentication: {}", e.getMessage());
         }
+        // Continuar con el siguiente filtro en la cadena
         filterChain.doFilter(request, response);
     }
 }

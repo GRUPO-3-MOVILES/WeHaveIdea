@@ -1,7 +1,7 @@
 package com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.application.internal.repositoriesimpl;
 
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.domain.model.aggregates.Roadmap;
-import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.infrastructure.persistence.sdmbd.repositories.RoadmapRepository;
+import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.infrastructure.persistence.sdmdb.repositories.RoadmapRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -14,8 +14,12 @@ import java.util.Optional;
 @Repository
 public class RoadmapRepositoryImpl implements RoadmapRepository {
 
-    @Autowired
     MongoTemplate mongoTemplate;
+
+    @Autowired
+    public RoadmapRepositoryImpl(MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
+    }
 
     @Override
     public Optional<Roadmap> findByTitle(String title) {
@@ -34,20 +38,6 @@ public class RoadmapRepositoryImpl implements RoadmapRepository {
     @Override
     public void saveRoadmap(Roadmap roadmap) {
         mongoTemplate.save(roadmap);
-    }
-
-    @Override
-    public boolean existingByTitle(String title) {
-        Query query = new Query();
-        query.addCriteria(Criteria.where("title").is(title));
-        return mongoTemplate.exists(query, Roadmap.class);
-    }
-
-    @Override
-    public boolean existingById(String id) {
-        Query query = new Query();
-        query.addCriteria(Criteria.where("id").is(id));
-        return mongoTemplate.exists(query, Roadmap.class);
     }
 
     @Override

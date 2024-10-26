@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/api/authentication", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Authentication", description = "Authentication Endpoints")
 public class AuthenticationController {
+
     private final UserCommandService userCommandService;
 
     public AuthenticationController(UserCommandService userCommandService) {

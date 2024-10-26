@@ -4,8 +4,10 @@ import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.dom
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.domain.model.entities.Edge;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.domain.model.entities.Node;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
@@ -14,24 +16,17 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Document(collection = "roadmaps")
+@AllArgsConstructor
+@NoArgsConstructor
 public class Roadmap extends AuditableAbstractAggregateRoot<Roadmap> {
 
     private String ownerId; // El perfil del usuario que creó el roadmap
-    private String title;
-    private boolean isAIRecommended; // Determina si el roadmap tiene recomendaciones AI
-    private String description;
+    private String title; // Título del roadmap que el usuario puede asignar
+    private String description;  // Descripción del roadmap que el usuario puede asignar
+    private String aiInteractionId; // ID de la interacción de IA
     private List<Node> nodes = new ArrayList<>(); // Nodos del roadmap
     private List<Edge> edges = new ArrayList<>(); // Relaciones entre nodos
     private boolean isCompleted; // Si el roadmap está completo o no
-
-    // Constructor
-    public Roadmap(String ownerId, String title, String description, List<Node> nodes, List<Edge> edges) {
-        this.ownerId = ownerId;
-        this.title = title;
-        this.description = description;
-        this.nodes = nodes != null ? nodes : new ArrayList<>();
-        this.edges = edges != null ? edges : new ArrayList<>();
-    }
 
     // Constructor desde comando de creación
     public Roadmap(CreateRoadmapCommand command) {
@@ -44,22 +39,25 @@ public class Roadmap extends AuditableAbstractAggregateRoot<Roadmap> {
 
     // Metodo para agregar nodos y aristas generadas por IA (AIInteraction)
     public void addAIInteraction(AIInteraction aiInteraction) {
-        this.nodes.addAll(aiInteraction.getNodes()); // Agregar todos los nodos
-        this.edges.addAll(aiInteraction.getEdges()); // Agregar todas las aristas
-        this.isAIRecommended = true; // Marcar que el roadmap incluye IA
+        addNodes(aiInteraction.getNodes()); // Agregar todos los nodos
+        addEdges(aiInteraction.getEdges()); // Agregar todas las aristas
     }
 
-    // Metodo para agregar un nodo individualmente
-    public void addNode(Node node) {
-        if (!this.nodes.contains(node)) {
-            this.nodes.add(node);
+     // Metodo para agregar un nodo individualmente o multiples nodos
+    public void addNodes(List<Node> nodes) {
+        for (Node node : nodes) {
+            if (!this.nodes.contains(node)) {
+                this.nodes.add(node);
+            }
         }
     }
 
-    // Metodo para agregar una arista (edge) individualmente
-    public void addEdge(Edge edge) {
-        if (!this.edges.contains(edge)) {
-            this.edges.add(edge);
+    // Metodo para agregar una arista (edge) individualmente o multiples aristas
+    public void addEdges(List<Edge> edges) {
+        for (Edge edge : edges) {
+            if (!this.edges.contains(edge)) {
+                this.edges.add(edge);
+            }
         }
     }
 

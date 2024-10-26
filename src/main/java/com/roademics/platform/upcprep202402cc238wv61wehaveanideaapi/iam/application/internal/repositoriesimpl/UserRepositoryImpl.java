@@ -2,7 +2,6 @@ package com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.applica
 
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.domain.model.aggregates.User;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.infrastructure.persistence.sdmdb.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -14,8 +13,11 @@ import java.util.Optional;
 @Repository
 public class UserRepositoryImpl implements UserRepository {
 
-    @Autowired
     MongoTemplate mongoTemplate;
+
+    UserRepositoryImpl(MongoTemplate _mongoTemplate) {
+        this.mongoTemplate = _mongoTemplate;
+    }
 
     @Override
     public Optional<User> findByUsername(String username) {

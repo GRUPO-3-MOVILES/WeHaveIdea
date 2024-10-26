@@ -7,10 +7,10 @@ import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.dom
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.domain.model.entities.Node;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.domain.model.valueobjects.JsonStructure;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.shared.interfaces.rest.resources.GeminiInterface;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -103,7 +103,8 @@ public class GeminiServiceImpl {
                     }
                 }
             } catch (Exception e) {
-                LOGGER.error("Error parsing edges from Gemini response: {}", e.getMessage());
+                LOGGER.error("Error parsing edges from Gemini response: {}", e.getMessage(), e);
+                throw new RuntimeException("Error parsing edges from Gemini response", e);
             }
         }
         return edges;
