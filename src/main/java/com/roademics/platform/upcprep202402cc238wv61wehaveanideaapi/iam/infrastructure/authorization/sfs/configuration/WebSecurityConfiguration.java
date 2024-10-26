@@ -10,6 +10,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -60,23 +61,20 @@ public class WebSecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        http.cors(configurer -> {
-            configurer.configurationSource(c -> {
-                var cors = new CorsConfiguration();
-                cors.setAllowedOrigins(List.of("*")); // En producción, deberías limitar los orígenes permitidos
-                cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                cors.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
-                cors.setAllowCredentials(true);  // Permitir enviar credenciales (si es necesario)
-                return cors;
-            });
-        });
-        http.csrf(csrfConfigurer -> csrfConfigurer.disable())
+        http.cors(configurer -> configurer.configurationSource(c -> {
+            var cors = new CorsConfiguration();
+            cors.setAllowedOrigins(List.of("*"));
+            cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+            cors.setAllowedHeaders(List.of("*"));
+            return cors;
+        }));
+        http.csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(exceptionHandling -> exceptionHandling.
                         authenticationEntryPoint(unauthorizedRequestHandler))
                 .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         // Permitir acceso público a las rutas de autenticación
-                        .requestMatchers("/api/authentication/sign-in", "/api/authentication/sign-up", "/api/ai-interactions/start", "/api/ai-interactions/send-prompt", "/api/ai-interactions/end").permitAll()
+                        .requestMatchers("/api/authentication/sign-in", "/api/authentication/sign-up", "/api/ai-interactions/send-prompt").permitAll()
 
                         // Permitir acceso público a la documentación de Swagger
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**", "/swagger-resources/**", "/webjars/**").permitAll()
