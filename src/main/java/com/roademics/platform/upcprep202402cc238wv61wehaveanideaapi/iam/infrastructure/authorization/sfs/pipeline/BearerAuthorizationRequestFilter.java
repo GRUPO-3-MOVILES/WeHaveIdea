@@ -26,7 +26,6 @@ import java.io.IOException;
  */
 public class BearerAuthorizationRequestFilter extends OncePerRequestFilter {
 
-    // Definimos las rutas exactas de Swagger que no requieren autenticación
     private static final Logger LOGGER = LoggerFactory.getLogger(BearerAuthorizationRequestFilter.class);
     private final BearerTokenService tokenService;
 
@@ -51,27 +50,13 @@ public class BearerAuthorizationRequestFilter extends OncePerRequestFilter {
             String requestURI = request.getRequestURI();
 
             // Excluir todas las rutas de Swagger y recursos estáticos
-            if (requestURI.startsWith("/swagger-ui") || requestURI.startsWith("/v3/api-docs")) {
-                filterChain.doFilter(request, response);
-                return;
-            }
-
-            // Excluir las rutas de autenticación (sign-in, sign-up) para que no requieran token
-            if (requestURI.equals("/api/authentication/sign-in") || requestURI.equals("/api/authentication/sign-up")) {
+            if (isPublicPath(requestURI)) {
                 filterChain.doFilter(request, response);
                 return;
             }
 
             // Obtener el token del encabezado Authorization
             String token = tokenService.getBearerTokenFrom(request);
-
-            // Evitar registrar el token para recursos estáticos (JS, CSS, imágenes, etc.)
-            if (requestURI.endsWith(".html") || requestURI.endsWith(".js") || requestURI.endsWith(".css") ||
-                    requestURI.endsWith(".png") || requestURI.endsWith(".jpg") || requestURI.endsWith(".jpeg") ||
-                    requestURI.endsWith(".gif") || requestURI.endsWith(".svg") || requestURI.endsWith(".woff2")) {
-                filterChain.doFilter(request, response);
-                return;
-            }
 
             // Si el token es nulo, solo registrar "Token: null"
             if (token == null) {
@@ -92,5 +77,21 @@ public class BearerAuthorizationRequestFilter extends OncePerRequestFilter {
         }
         // Continuar con el siguiente filtro en la cadena
         filterChain.doFilter(request, response);
+    }
+
+    private boolean isPublicPath(String requestURI) {
+        return requestURI.startsWith("/swagger-ui") ||
+                requestURI.startsWith("/v3/api-docs") ||
+                requestURI.equals("/api/authentication/sign-in") ||
+                requestURI.equals("/api/authentication/sign-up") ||
+                requestURI.endsWith(".html") ||
+                requestURI.endsWith(".js") ||
+                requestURI.endsWith(".css") ||
+                requestURI.endsWith(".png") ||
+                requestURI.endsWith(".jpg") ||
+                requestURI.endsWith(".jpeg") ||
+                requestURI.endsWith(".gif") ||
+                requestURI.endsWith(".svg") ||
+                requestURI.endsWith(".woff2");
     }
 }
