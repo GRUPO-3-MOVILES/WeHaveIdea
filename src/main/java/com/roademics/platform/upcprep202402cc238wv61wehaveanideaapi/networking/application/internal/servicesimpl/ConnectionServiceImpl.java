@@ -23,71 +23,71 @@ public class ConnectionServiceImpl implements ConnectionService {
     }
 
     @Override
-    public String handle(CreateConnectionCommand command) {
+    public Connection handle(CreateConnectionCommand command) {
         Connection connection = new Connection(command);
         connectionRepository.saveConnection(connection);
-        return connection.getId();
+        return connection;
     }
 
     @Override
-    public String handle(RequestConnectionCommand command) {
+    public Connection handle(RequestConnectionCommand command) {
         Optional<Connection> connection = connectionRepository.findById(command.ConnectionId());
         if (connection.isPresent()) {
             try {
                 connection.get().requestConnection();
                 connectionRepository.saveConnection(connection.get());
-                return connection.get().getId();
+                return connection.get();
             } catch (Exception e) {
                 Logger.getLogger("Error: " + e.getMessage());
-                return "0";
+                return null;
             }
         }
-        return "0";
+        return null;
     }
 
-    public String handle(ConfirmConnectionCommand command) {
+    public Connection handle(ConfirmConnectionCommand command) {
         Optional<Connection> connection = connectionRepository.findById(command.ConnectionId());
         if (connection.isPresent()) {
             try {
                 connection.get().confirmConnection();
                 connectionRepository.saveConnection(connection.get());
-                return connection.get().getId();
+                return connection.get();
             } catch (Exception e) {
                 Logger.getLogger("Error: " + e.getMessage());
-                return "0";
+                return null;
             }
         }
-        return "0";
+        return null;
     }
 
-    public String handle(RejectConnectionCommand command) {
+    public Connection handle(RejectConnectionCommand command) {
         Optional<Connection> connection = connectionRepository.findById(command.ConnectionId());
         if (connection.isPresent()) {
             try {
                 connection.get().rejectConnection();
                 connectionRepository.saveConnection(connection.get());
-                return connection.get().getId();
+                return connection.get();
             } catch (Exception e) {
                 Logger.getLogger("Error: " + e.getMessage());
-                return "0";
+                return null;
             }
         }
-        return "0";
+        return null;
     }
 
-    public String handle(CancelConnectionCommand command) {
+    public Connection handle(CancelConnectionCommand command) {
         Optional<Connection> connection = connectionRepository.findById(command.ConnectionId());
         if (connection.isPresent()) {
             try {
                 connection.get().cancelConnection();
                 connectionRepository.saveConnection(connection.get());
-                return connection.get().getId();
+                return connection.get();
             } catch (Exception e) {
                 Logger.getLogger("Error: " + e.getMessage());
-                return "0";
+                return null;
             }
         }
-        return "0";
+        return null;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.networking.domain.model.aggregates;
 
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.networking.domain.model.commands.CreateEmployerCommand;
+import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.networking.domain.model.commands.UpdateEmployerCommand;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.networking.domain.model.valueobjects.ProfileId;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import lombok.Data;
@@ -33,9 +34,12 @@ public class Employer extends AuditableAbstractAggregateRoot<Employer> {
         this.preferredLocations = command.preferredLocations();
     }
 
-    public Employer(ProfileId profileId){
-        this();
-        this.profileId = profileId;
+    public void UpdateEmployer(UpdateEmployerCommand command){
+        this.companyName = command.companyName();
+        this.industry = command.industry();
+        this.profileId = new ProfileId(command.profileId());
+        this.preferredSkills = command.preferredSkills();
+        this.preferredLocations = command.preferredLocations();
     }
 
     public void hirePathFinder(Pathfinder pathfinder){

@@ -4,6 +4,7 @@ import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.networking.d
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.networking.domain.model.aggregates.Pathfinder;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.networking.domain.model.commands.CreateEmployerCommand;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.networking.domain.model.commands.HirePathFinderCommand;
+import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.networking.domain.model.commands.UpdateEmployerCommand;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.networking.domain.model.queries.GetAllEmployersQuery;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.networking.domain.model.queries.GetEmployerByProfileIdQuery;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.networking.domain.services.EmployerService;
@@ -27,12 +28,22 @@ public class EmployerServiceImpl implements EmployerService {
         this.employerRepository = employerRepository;
     }
 
-
     @Override
-    public String handle(CreateEmployerCommand command) {
+    public Employer handle(CreateEmployerCommand command) {
         Employer employer = new Employer(command);
         employerRepository.saveEmployer(employer);
-        return employer.getId();
+        return employer;
+    }
+
+    @Override
+    public Optional<Employer> handle(UpdateEmployerCommand command) {
+        Optional<Employer> employer = employerRepository.findById(command.employerId());
+        if (employer.isPresent()) {
+            employer.get().UpdateEmployer(command);
+            employerRepository.saveEmployer(employer.get());
+            return employer;
+        }
+        return Optional.empty();
     }
 
     @Override
@@ -46,7 +57,7 @@ public class EmployerServiceImpl implements EmployerService {
     }
 
     @Override
-    public Optional<Pathfinder> handle(HirePathFinderCommand command) {
+    public boolean handle(HirePathFinderCommand command) {
         Optional<Pathfinder> pathfinder = pathfinderRepository.findById(command.employerId());
         Employer employer = employerRepository.findById(command.employerId()).orElseThrow(() -> new RuntimeException("Employer not found"));
         if (pathfinder.isPresent()) {
@@ -59,8 +70,8 @@ public class EmployerServiceImpl implements EmployerService {
             } catch (Exception e){
                 throw new RuntimeException("PathFinder doesn't exist");
             }
-            return pathfinder;
+            return true;
         }
-        return Optional.empty();
+        return false;
     }
 }

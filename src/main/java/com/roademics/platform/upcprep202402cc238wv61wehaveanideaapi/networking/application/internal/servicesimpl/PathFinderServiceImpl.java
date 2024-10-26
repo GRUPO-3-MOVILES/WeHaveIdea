@@ -2,11 +2,13 @@ package com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.networking.
 
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.networking.domain.model.aggregates.Pathfinder;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.networking.domain.model.commands.CreatePathfindersCommand;
-import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.networking.domain.model.commands.PathfindersMetricOnModuleCompletedCommand;
+import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.networking.domain.model.commands.UpdatePathfindersMetricOnModuleCompletedCommand;
+import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.networking.domain.model.commands.UpdatePathFinderCommand;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.networking.domain.model.commands.UpdatePathfindersMetricOnRoadmapCompletedCommand;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.networking.domain.model.queries.GetAllPathfindersQuery;
+import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.networking.domain.model.queries.GetPathFinderTotalCompletedModulesQuery;
+import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.networking.domain.model.queries.GetPathFinderTotalCompletedRoadmapsQuery;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.networking.domain.model.queries.GetPathfinderByProfileIdQuery;
-import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.networking.domain.model.valueobjects.ProfileId;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.networking.domain.services.PathFinderService;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.networking.infrastructure.persistence.sdmbd.repositories.PathfinderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,20 +38,42 @@ public class PathFinderServiceImpl implements PathFinderService {
     }
 
     @Override
-    public ProfileId handle(CreatePathfindersCommand command) {
+    public Integer handle(GetPathFinderTotalCompletedRoadmapsQuery query) {
+        Pathfinder pathfinder = pathfinderRepository.findById(query.pathFinderId()).orElseThrow();
+        return pathfinder.getTotalCompletedRoadmaps();
+    }
+
+    @Override
+    public Integer handle(GetPathFinderTotalCompletedModulesQuery query) {
+        Pathfinder pathfinder = pathfinderRepository.findById(query.pathFinderId()).orElseThrow();
+        return pathfinder.getTotalCompletedModules();
+    }
+
+    @Override
+    public Pathfinder handle(CreatePathfindersCommand command) {
         Pathfinder pathfinder = new Pathfinder(command);
         pathfinderRepository.savePathfinders(pathfinder);
-        return pathfinder.getProfileId();
+        return pathfinder;
     }
 
     @Override
-    public ProfileId handle(UpdatePathfindersMetricOnRoadmapCompletedCommand command) {
-        Pathfinder pathfinder = pathfinderRepository.findById(command.pathfinderId()).orElseThrow();
-        return null;
+    public Optional<Pathfinder> handle(UpdatePathFinderCommand command) {
+        Optional<Pathfinder> pathfinder = Optional.of(pathfinderRepository.findById(command.pathFinderId()).orElseThrow());
+        pathfinder.get().UpdatePathFinder(command);
+        return pathfinder;
     }
 
     @Override
-    public ProfileId handle(PathfindersMetricOnModuleCompletedCommand command) {
-        return null;
+    public Optional<Pathfinder> handle(UpdatePathfindersMetricOnRoadmapCompletedCommand command) {
+        Optional<Pathfinder> pathfinder = Optional.of(pathfinderRepository.findById(command.pathfinderId()).orElseThrow());
+        pathfinder.get().updatePerformanceOnRoadmapCompleted();
+        return pathfinder;
+    }
+
+    @Override
+    public Optional<Pathfinder> handle(UpdatePathfindersMetricOnModuleCompletedCommand command) {
+        Optional<Pathfinder> pathfinder = Optional.of(pathfinderRepository.findById(command.pathfinderId()).orElseThrow());
+        pathfinder.get().updatePerformanceOnModuleCompleted();
+        return pathfinder;
     }
 }

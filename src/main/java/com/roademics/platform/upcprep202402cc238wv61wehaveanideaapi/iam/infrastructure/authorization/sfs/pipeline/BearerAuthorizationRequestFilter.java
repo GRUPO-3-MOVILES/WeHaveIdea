@@ -15,8 +15,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Bearer Authorization Request Filter.
@@ -29,10 +27,6 @@ import java.util.List;
 public class BearerAuthorizationRequestFilter extends OncePerRequestFilter {
 
     // Definimos las rutas exactas de Swagger que no requieren autenticación
-    private static final List<String> SWAGGER_PATHS = Arrays.asList(
-            "/swagger-ui/index.html"
-    );
-
     private static final Logger LOGGER = LoggerFactory.getLogger(BearerAuthorizationRequestFilter.class);
     private final BearerTokenService tokenService;
 
@@ -45,7 +39,7 @@ public class BearerAuthorizationRequestFilter extends OncePerRequestFilter {
     }
 
     /**
-     * Este método es responsable de filtrar las solicitudes y establecer la autenticación del usuario.
+     * Este metodo es responsable de filtrar las solicitudes y establecer la autenticación del usuario.
      * @param request El objeto de solicitud.
      * @param response El objeto de respuesta.
      * @param filterChain La cadena de filtros.
