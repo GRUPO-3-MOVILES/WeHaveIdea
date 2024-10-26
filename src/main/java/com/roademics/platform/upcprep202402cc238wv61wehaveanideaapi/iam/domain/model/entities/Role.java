@@ -25,7 +25,7 @@ public class Role {
     }
 
     public static Role getDefaultRole() {
-        return new Role(Roles.ROLE_PATHFINDER);
+        return new Role(Roles.ROLE_USER);
     }
 
     public static Role toRoleFromName(String name) {

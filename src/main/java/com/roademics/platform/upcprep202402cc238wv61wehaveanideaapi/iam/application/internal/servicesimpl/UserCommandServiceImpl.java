@@ -35,7 +35,7 @@ public class UserCommandServiceImpl implements UserCommandService {
             throw new RuntimeException("Username already exists");
         var roles = command.roles();
         if (roles.isEmpty()) {
-            var role = roleRepository.findByName(Roles.ROLE_PATHFINDER);
+            var role = roleRepository.findByName(Roles.ROLE_USER);
             roles.add(role.get());
         }
         roles = command.roles().stream()
