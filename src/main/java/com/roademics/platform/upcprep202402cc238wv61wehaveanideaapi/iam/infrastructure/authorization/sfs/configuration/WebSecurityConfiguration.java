@@ -3,6 +3,7 @@ package com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.infrast
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.infrastructure.authorization.sfs.pipeline.BearerAuthorizationRequestFilter;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.infrastructure.hashing.bcrypt.BCryptHashingService;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.iam.infrastructure.tokens.jwt.BearerTokenService;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -79,7 +80,7 @@ public class WebSecurityConfiguration {
                         .requestMatchers("/api/authentication/sign-in", "/api/authentication/sign-up", "/api/ai-interactions/send-prompt").permitAll()
 
                         // Permitir acceso público a la documentación de Swagger
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**", "/swagger-resources/**", "/webjars/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/index.html", "/swagger-ui/**", "/swagger-resources/**", "/webjars/**").permitAll()
                         .anyRequest().authenticated());
         http.authenticationProvider(authenticationProvider());
         http.addFilterBefore(authorizationRequestFilter(), UsernamePasswordAuthenticationFilter.class);

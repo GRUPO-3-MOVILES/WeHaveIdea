@@ -80,7 +80,7 @@ public class BearerAuthorizationRequestFilter extends OncePerRequestFilter {
     }
 
     private boolean isPublicPath(String requestURI) {
-        return requestURI.startsWith("/swagger-ui/index.html") ||
+        return requestURI.startsWith("/swagger-ui/") ||
                 requestURI.startsWith("/v3/api-docs") ||
                 requestURI.equals("/api/authentication/sign-in") ||
                 requestURI.equals("/api/authentication/sign-up") ||
@@ -94,4 +94,5 @@ public class BearerAuthorizationRequestFilter extends OncePerRequestFilter {
                 requestURI.endsWith(".svg") ||
                 requestURI.endsWith(".woff2");
     }
+
 }
