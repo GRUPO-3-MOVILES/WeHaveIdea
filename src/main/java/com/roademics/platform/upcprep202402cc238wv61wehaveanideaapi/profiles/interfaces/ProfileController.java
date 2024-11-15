@@ -25,7 +25,7 @@ public class ProfileController {
         this.profileService = profileService;
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<String> createProfile(@RequestBody CreateProfileCommand command) {
         Optional<Profile> profile = profileService.handle(command);
         return profile.map(p -> ResponseEntity.ok(p.getId())).orElseGet(() -> ResponseEntity.badRequest().build());
