@@ -1,6 +1,9 @@
 package com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.profiles.domain.model.valueobjects;
 
 
+import lombok.Getter;
+
+@Getter
 public record PersonName(String firstName, String lastName) {
     public PersonName() {
         this(null, null);

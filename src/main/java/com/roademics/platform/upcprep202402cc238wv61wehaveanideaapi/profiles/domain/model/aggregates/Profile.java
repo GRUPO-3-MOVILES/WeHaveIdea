@@ -32,9 +32,6 @@ public class Profile extends AuditableAbstractAggregateRoot<Profile> {
         this.biography = command.biography();
     }
 
-    public void updateName(String firstName, String lastName){
-        this.personalInformation.setPersonName(firstName, lastName);
-    }
 
     public void updateProfile(UpdateProfileCommand command){
         this.personalInformation = new PersonalInformation(command.firstName(), command.lastName(), command.city(), command.state(), command.country(), command.zipCode(), command.phoneNumber(), command.dateOfBirth());
