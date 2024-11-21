@@ -68,8 +68,8 @@ public class ProfileController {
 
     @PutMapping("/updateprofile/{id}")
     public ResponseEntity<ProfileResource> updateProfile(@PathVariable String id, @RequestBody UpdateProfileResource resource) {
-        var command = UpdateProfileCommandFromResourceAssembler.toCommandFromResource(resource);
-        var updatedProfile = profileService.handle(command);
+        GetProfilesByIdQuery query = new GetProfilesByIdQuery(id);
+        var updatedProfile = profileService.handle(query);
         if (updatedProfile.isEmpty()) return ResponseEntity.notFound().build();
         var profileResource = ProfileResourceFromEntityAssembler.toResourceFromEntity(updatedProfile.get());
         return ResponseEntity.ok(profileResource);
