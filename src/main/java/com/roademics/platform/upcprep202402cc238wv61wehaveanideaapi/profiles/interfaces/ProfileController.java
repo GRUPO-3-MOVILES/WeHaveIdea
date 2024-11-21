@@ -31,28 +31,28 @@ public class ProfileController {
         return profile.map(p -> ResponseEntity.ok(p.getId())).orElseGet(() -> ResponseEntity.badRequest().build());
     }
 
-    @GetMapping("/api/fecthallprofile")
+    @GetMapping("/fecthallprofile")
     public ResponseEntity<List<Profile>> getAllProfiles() {
         var getAllProfilesQuery = new GetAllProfilesQuery();
         var profiles = profileService.handle(getAllProfilesQuery);
         return  profiles.stream().toList().isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(profiles);
     }
 
-    @GetMapping("/api//getprofile{id}")
+    @GetMapping("/getprofile{id}")
     public ResponseEntity<Profile> getProfileById(@PathVariable String id) {
         var getProfilesByIdQuery = new GetProfilesByIdQuery(id);
         Optional<Profile> profile = profileService.handle(getProfilesByIdQuery);
         return profile.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/api/fetchbyprofile/{email}")
+    @GetMapping("/fetchbyprofile/{email}")
     public ResponseEntity<Profile> getProfileByEmail(@RequestParam String email) {
         var getProfileByEmailQuery = new GetProfileByEmailQuery(email);
         Optional<Profile> profile = profileService.handle(getProfileByEmailQuery);
         return profile.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PutMapping("/api/updateprofile/{id}")
+    @PutMapping("/updateprofile/{id}")
     public ResponseEntity<Profile> updateProfile(@PathVariable String id, @RequestBody UpdateProfileCommand command) {
         var updateProfileCommand = new UpdateProfileCommand(id, command.city(), command.state(), command.country(), command.zipCode(), command.phoneNumber(), command.email(), command.firstName(), command.lastName(), command.dateOfBirth(), command.biography(),command.profileType());
         Optional<Profile> updatedProfile = profileService.handle(updateProfileCommand);
