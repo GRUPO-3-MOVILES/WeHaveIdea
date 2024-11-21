@@ -77,12 +77,13 @@ public class WebSecurityConfiguration {
                 .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         // Permitir acceso público a las rutas de autenticación
-                        .requestMatchers("/api/authentication/sign-in", "/api/authentication/sign-up", "/api/ai-interactions/send-prompt").permitAll()
+                        .requestMatchers("/api/authentication/sign-in", "/api/authentication/sign-up", "/api/ai-interactions/send-prompt", "/api/profiles/create").permitAll()
 
                         // Permitir acceso público a la documentación de Swagger
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/index.html", "/swagger-ui/**", "/swagger-resources/**", "/webjars/**").permitAll()
                         .anyRequest().authenticated());
         http.authenticationProvider(authenticationProvider());
+        http.addFilterBefore(authorizationRequestFilter(), UsernamePasswordAuthenticationFilter.class);
         http.addFilterAfter(authorizationRequestFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
