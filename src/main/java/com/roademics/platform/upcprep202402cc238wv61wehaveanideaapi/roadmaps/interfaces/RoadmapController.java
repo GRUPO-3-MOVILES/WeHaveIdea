@@ -1,15 +1,18 @@
 package com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.interfaces;
 
-import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.domain.model.aggregates.Roadmap;
-import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.domain.model.commands.CreateRoadmapCommand;
-import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.domain.model.commands.UpdateRoadmapCommand;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.domain.services.RoadmapService;
+import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.interfaces.rest.resources.CreateRoadmapResource;
+import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.interfaces.rest.resources.RoadmapResource;
+import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.interfaces.rest.resources.UpdateRoadmapResource;
+import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.interfaces.rest.transform.CreateRoadmapCommandFromResourceAssembler;
+import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.interfaces.rest.transform.RoadmapResourceFromEntityAssembler;
+import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.interfaces.rest.transform.UpdateRoadmapCommandFromResourceAssembler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/roadmaps")
@@ -22,39 +25,48 @@ public class RoadmapController {
         this.roadmapService = roadmapService;
     }
 
-    // Crear un nuevo roadmap
     @PostMapping("/create")
-    public ResponseEntity<Roadmap> createRoadmap(@RequestBody CreateRoadmapCommand command) {
-        Roadmap roadmap = roadmapService.handle(command);
-        return ResponseEntity.ok(roadmap);
+    public ResponseEntity<RoadmapResource> createRoadmap(@RequestBody CreateRoadmapResource resource) {
+        var command = CreateRoadmapCommandFromResourceAssembler.toCommandFromResource(resource);
+        var roadmap = roadmapService.handle(command);
+        if (roadmap == null) return ResponseEntity.badRequest().build();
+        var roadmapResource = RoadmapResourceFromEntityAssembler.toResourceFromEntity(roadmap);
+        return new ResponseEntity<>(roadmapResource, HttpStatus.CREATED);
     }
 
-    // Actualizar un roadmap existente
     @PutMapping("/update")
-    public ResponseEntity<Roadmap> updateRoadmap(@RequestBody UpdateRoadmapCommand command) {
-        Optional<Roadmap> roadmap = roadmapService.handle(command);
-        return roadmap.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<RoadmapResource> updateRoadmap(@RequestBody UpdateRoadmapResource resource) {
+        var command = UpdateRoadmapCommandFromResourceAssembler.toCommandFromResource(resource);
+        var roadmap = roadmapService.handle(command);
+        if (roadmap.isEmpty()) return ResponseEntity.notFound().build();
+        var roadmapResource = RoadmapResourceFromEntityAssembler.toResourceFromEntity(roadmap.get());
+        return ResponseEntity.ok(roadmapResource);
     }
 
-    // Obtener un roadmap por ID
     @GetMapping("/{roadmapId}")
-    public ResponseEntity<Roadmap> getRoadmapById(@PathVariable String roadmapId) {
-        Optional<Roadmap> roadmap = roadmapService.getRoadmapById(roadmapId);
-        return roadmap.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<RoadmapResource> getRoadmapById(@PathVariable String roadmapId) {
+        var roadmap = roadmapService.getRoadmapById(roadmapId);
+        if (roadmap.isEmpty()) return ResponseEntity.notFound().build();
+        var roadmapResource = RoadmapResourceFromEntityAssembler.toResourceFromEntity(roadmap.get());
+        return ResponseEntity.ok(roadmapResource);
     }
 
-    // Obtener todos los roadmaps para un usuario
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Roadmap>> getAllRoadmapsForUser(@PathVariable String userId) {
-        List<Roadmap> roadmaps = roadmapService.getAllRoadmapsForUser(userId);
-        return ResponseEntity.ok(roadmaps);
+    public ResponseEntity<List<RoadmapResource>> getAllRoadmapsForUser(@PathVariable String userId) {
+        var roadmaps = roadmapService.getAllRoadmapsForUser(userId);
+        if (roadmaps.isEmpty()) return ResponseEntity.notFound().build();
+        var roadmapResources = roadmaps.stream()
+                .map(RoadmapResourceFromEntityAssembler::toResourceFromEntity)
+                .toList();
+        return ResponseEntity.ok(roadmapResources);
     }
 
-    // After
     @GetMapping("/title/{title}")
-    public ResponseEntity<Roadmap> getRoadmapByTitle(@PathVariable String title) {
-        Optional<Roadmap> roadmap = roadmapService.getRoadmapByTitle(title);
-        return roadmap.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<RoadmapResource> getRoadmapByTitle(@PathVariable String title) {
+        var roadmap = roadmapService.getRoadmapByTitle(title);
+        if (roadmap.isEmpty()) return ResponseEntity.notFound().build();
+        var roadmapResource = RoadmapResourceFromEntityAssembler.toResourceFromEntity(roadmap.get());
+        return ResponseEntity.ok(roadmapResource);
     }
 
     @DeleteMapping("/{id}")
