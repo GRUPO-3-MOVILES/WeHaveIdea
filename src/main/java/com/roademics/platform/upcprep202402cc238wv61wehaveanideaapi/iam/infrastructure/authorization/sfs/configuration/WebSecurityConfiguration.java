@@ -63,27 +63,22 @@ public class WebSecurityConfiguration {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
         http.cors(configurer -> configurer.configurationSource(c -> {
-            var cors = new CorsConfiguration();
-            cors.setAllowedOrigins(List.of("*"));
-            cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-            cors.setAllowedHeaders(List.of("*"));
-            return cors;
-        }));
-        http.csrf(AbstractHttpConfigurer::disable)
-                .exceptionHandling(exceptionHandling -> exceptionHandling.
-                        authenticationEntryPoint(unauthorizedRequestHandler))
+                    var cors = new CorsConfiguration();
+                    cors.setAllowedOrigins(List.of("*"));
+                    cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                    cors.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+                    return cors;
+                }))
+                .csrf(AbstractHttpConfigurer::disable)
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .authenticationEntryPoint(unauthorizedRequestHandler))
                 .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        // Permitir acceso público a las rutas de autenticación
-                        .requestMatchers("/api/authentication/sign-in", "/api/authentication/sign-up", "/api/ai-interactions/send-prompt").permitAll()
-
-                        // Permitir acceso público a la documentación de Swagger
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/index.html", "/swagger-ui/**", "/swagger-resources/**", "/webjars/**").permitAll()
-                        .anyRequest().authenticated());
-        http.authenticationProvider(authenticationProvider());
-        http.addFilterAfter(authorizationRequestFilter(), UsernamePasswordAuthenticationFilter.class);
+                        .requestMatchers("/api/authentication/**", "/api/profiles/create", "/v3/api-docs/**", "/swagger-ui/index.html", "/swagger-ui/**", "/swagger-resources/**", "/webjars/**").permitAll()
+                        .anyRequest().authenticated())
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(authorizationRequestFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 }
