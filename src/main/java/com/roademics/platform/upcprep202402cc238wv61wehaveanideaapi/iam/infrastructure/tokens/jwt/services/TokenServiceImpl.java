@@ -24,9 +24,6 @@ public class TokenServiceImpl implements BearerTokenService {
     private static final String BEARER_PREFIX = "Bearer ";
     private static final int TOKEN_BEGIN_INDEX = BEARER_PREFIX.length();
 
-    @Value("${authorization.jwt.secret}")
-    private String secretKey;
-
     private final SecretKey key;
 
     @Value("${authorization.jwt.expiration.days}")
@@ -34,7 +31,8 @@ public class TokenServiceImpl implements BearerTokenService {
 
     // Using HS256 for JWT HMAC-SHA encryption
     public TokenServiceImpl() {
-        this.key = Keys.hmacShaKeyFor(secretKey.getBytes());    }
+        this.key = Keys.secretKeyFor(SignatureAlgorithm.HS256); // Generate a 256-bit key for HMAC-SHA256
+    }
 
     @Override
     public String getBearerTokenFrom(HttpServletRequest request) {
@@ -70,7 +68,6 @@ public class TokenServiceImpl implements BearerTokenService {
         }
         return false;
     }
-
 
     @Override
     public String getUsernameFromToken(String token) {

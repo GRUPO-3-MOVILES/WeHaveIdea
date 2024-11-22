@@ -76,6 +76,7 @@ public class WebSecurityConfiguration {
                 .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers("/api/authentication/**", "/api/profiles/create", "/v3/api-docs/**", "/swagger-ui/index.html", "/swagger-ui/**", "/swagger-resources/**", "/webjars/**").permitAll()
+                        // .requestMatchers("/**").permitAll() Temporal para pruebas
                         .anyRequest().authenticated())
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(authorizationRequestFilter(), UsernamePasswordAuthenticationFilter.class);
