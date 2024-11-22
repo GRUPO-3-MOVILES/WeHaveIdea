@@ -9,6 +9,6 @@ public class CreateProfileCommandFromResourceAssembler {
     public static CreateProfileCommand toCommandFromResource(CreateProfileResource resource) {
         return new CreateProfileCommand(resource.city(), resource.state(), resource.country(), resource.zipCode()
                 , resource.phoneNumber(), resource.email(), resource.firstName(), resource.lastName(),
-                new Date(resource.dateOfBirth()), resource.biography(), resource.profileType());
+                new Date(String.valueOf(resource.dateOfBirth())), resource.biography(), resource.profileType());
     }
 }

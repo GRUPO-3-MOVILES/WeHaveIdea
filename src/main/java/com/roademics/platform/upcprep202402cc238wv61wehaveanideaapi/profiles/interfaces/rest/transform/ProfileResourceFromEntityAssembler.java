@@ -11,8 +11,8 @@ public class ProfileResourceFromEntityAssembler {
                 entity.getPersonalInformation().getAddress().state(),
                 entity.getPersonalInformation().getAddress().country(),
                 entity.getPersonalInformation().getAddress().zipCode(),
-                 entity.getPersonalInformation().getPhoneNumber(),
-                 entity.getPersonalInformation().getDateOfBirth().toString(),
+                entity.getPersonalInformation().getPhoneNumber(),
+                entity.getPersonalInformation().getDateOfBirth(),
                 entity.getEmail().toString(), entity.getProfileType().toString(), entity.getBiography());
     }
 }
