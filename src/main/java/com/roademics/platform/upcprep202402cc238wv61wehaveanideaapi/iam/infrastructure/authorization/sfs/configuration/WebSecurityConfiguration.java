@@ -83,7 +83,6 @@ public class WebSecurityConfiguration {
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/index.html", "/swagger-ui/**", "/swagger-resources/**", "/webjars/**").permitAll()
                         .anyRequest().authenticated());
         http.authenticationProvider(authenticationProvider());
-        http.addFilterBefore(authorizationRequestFilter(), UsernamePasswordAuthenticationFilter.class);
         http.addFilterAfter(authorizationRequestFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
