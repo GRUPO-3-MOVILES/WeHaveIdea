@@ -1,5 +1,6 @@
 package com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.profiles.interfaces;
 
+import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.profiles.domain.model.commands.UpdateProfileCommand;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.profiles.domain.model.queries.GetAllProfilesQuery;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.profiles.domain.model.queries.GetProfileByEmailQuery;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.profiles.domain.model.queries.GetProfilesByIdQuery;
@@ -9,7 +10,6 @@ import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.profiles.int
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.profiles.interfaces.rest.resources.UpdateProfileResource;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.profiles.interfaces.rest.transform.CreateProfileCommandFromResourceAssembler;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.profiles.interfaces.rest.transform.ProfileResourceFromEntityAssembler;
-import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.profiles.interfaces.rest.transform.UpdateProfileCommandFromResourceAssembler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -68,8 +68,10 @@ public class ProfileController {
 
     @PutMapping("/updateprofile/{id}")
     public ResponseEntity<ProfileResource> updateProfile(@PathVariable String id, @RequestBody UpdateProfileResource resource) {
-        GetProfilesByIdQuery query = new GetProfilesByIdQuery(id);
-        var updatedProfile = profileService.handle(query);
+        UpdateProfileCommand command = new UpdateProfileCommand(id, resource.city(), resource.state(), resource.country(), resource.zipCode()
+                , resource.phoneNumber(), resource.email(), resource.firstName(), resource.lastName(),
+                resource.dateOfBirth(), resource.biography(), resource.profileType());
+        var updatedProfile = profileService.handle(command);
         if (updatedProfile.isEmpty()) return ResponseEntity.notFound().build();
         var profileResource = ProfileResourceFromEntityAssembler.toResourceFromEntity(updatedProfile.get());
         return ResponseEntity.ok(profileResource);
