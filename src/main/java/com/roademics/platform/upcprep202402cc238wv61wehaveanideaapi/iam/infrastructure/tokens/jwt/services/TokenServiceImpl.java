@@ -24,6 +24,9 @@ public class TokenServiceImpl implements BearerTokenService {
     private static final String BEARER_PREFIX = "Bearer ";
     private static final int TOKEN_BEGIN_INDEX = BEARER_PREFIX.length();
 
+    @Value("${authorization.jwt.secret}")
+    private String secretKey;
+
     private final SecretKey key;
 
     @Value("${authorization.jwt.expiration.days}")
@@ -31,8 +34,7 @@ public class TokenServiceImpl implements BearerTokenService {
 
     // Using HS256 for JWT HMAC-SHA encryption
     public TokenServiceImpl() {
-        this.key = Keys.secretKeyFor(SignatureAlgorithm.HS256); // Generate a 256-bit key for HMAC-SHA256
-    }
+        this.key = Keys.hmacShaKeyFor(secretKey.getBytes());    }
 
     @Override
     public String getBearerTokenFrom(HttpServletRequest request) {
@@ -56,14 +58,19 @@ public class TokenServiceImpl implements BearerTokenService {
     @Override
     public boolean validateToken(String token) {
         try {
-            parseToken(token); // Parsing the token will throw an exception if invalid
-            LOGGER.info("JSON Web Token is valid");
+            parseToken(token);
+            LOGGER.info("Token is valid");
             return true;
+        } catch (ExpiredJwtException e) {
+            LOGGER.error("Token expired: {}", e.getMessage());
+        } catch (UnsupportedJwtException e) {
+            LOGGER.error("Unsupported token: {}", e.getMessage());
         } catch (JwtException e) {
-            LOGGER.error("Invalid JSON Web Token: {}", e.getMessage());
+            LOGGER.error("Invalid token: {}", e.getMessage());
         }
         return false;
     }
+
 
     @Override
     public String getUsernameFromToken(String token) {
