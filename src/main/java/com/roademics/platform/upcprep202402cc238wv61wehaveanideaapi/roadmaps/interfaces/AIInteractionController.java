@@ -19,8 +19,8 @@ public class AIInteractionController {
 
     // Enviar un prompt a la IA (Gemini)
     @PostMapping("/send-prompt")
-    public ResponseEntity<AIInteraction> sendPromptToAI(@RequestParam String conversationId, @RequestBody String prompt) {
-        AIInteraction interaction = aiInteractionService.sendPromptToAI(prompt, conversationId);
+    public ResponseEntity<AIInteraction> sendPromptToAI(@RequestBody String prompt) {
+        AIInteraction interaction = aiInteractionService.sendPromptToAI(prompt);
         return ResponseEntity.ok(interaction);
     }
 }

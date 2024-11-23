@@ -25,8 +25,8 @@ public class AIInteractionServiceImpl implements AIInteractionService {
     }
 
     @Override
-    public AIInteraction sendPromptToAI(String prompt, String conversationId) {
-        AIInteraction aiInteraction = geminiService.getAIInteractionCompletion(prompt, conversationId);
+    public AIInteraction sendPromptToAI(String prompt) {
+        AIInteraction aiInteraction = geminiService.getAIInteractionCompletion(prompt);
         aiInteractionRepository.saveAIInteraction(aiInteraction);
         return aiInteraction;
     }

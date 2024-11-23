@@ -7,6 +7,8 @@ import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.dom
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.domain.services.AIInteractionService;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.domain.services.RoadmapService;
 import com.roademics.platform.upcprep202402cc238wv61wehaveanideaapi.roadmaps.infrastructure.persistence.sdmdb.repositories.RoadmapRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
@@ -51,10 +53,13 @@ public class RoadmapServiceImpl implements RoadmapService {
         return roadmapRepository.findById(roadmapId);
     }
 
+    private static final Logger logger = LoggerFactory.getLogger(RoadmapServiceImpl.class);
+
     @Override
     public void updateRoadmapWithAIContent(Roadmap roadmap, String interactionMadeId) {
         AIInteraction interactionMade = aiInteractionService.getAIInteractionById(interactionMadeId)
                 .orElseThrow(() -> new IllegalArgumentException("AIInteraction not found"));
+        logger.info("AIInteraction edges: {}", interactionMade.getEdges());
         if (roadmap != null) {
             roadmap.addAIInteraction(interactionMade);
             roadmapRepository.updateById(roadmap.getId(), roadmap); // Save the updated roadmap

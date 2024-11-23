@@ -6,6 +6,6 @@ import java.util.Optional;
 
 
 public interface AIInteractionService {
-    AIInteraction sendPromptToAI(String prompt, String conversationId);
+    AIInteraction sendPromptToAI(String prompt);
     Optional<AIInteraction> getAIInteractionById(String aiInteractionId);
 }

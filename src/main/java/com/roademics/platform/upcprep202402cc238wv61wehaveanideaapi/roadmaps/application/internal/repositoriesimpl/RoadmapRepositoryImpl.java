@@ -54,6 +54,7 @@ public class RoadmapRepositoryImpl implements RoadmapRepository {
         newRoadmap.setTitle(roadmap.getTitle());
         newRoadmap.setDescription(roadmap.getDescription());
         newRoadmap.setNodes(roadmap.getNodes());
+        newRoadmap.setEdges(roadmap.getEdges());
         newRoadmap.setCompleted(roadmap.isCompleted());
         newRoadmap.setOwnerId(roadmap.getOwnerId());
         mongoTemplate.save(newRoadmap);

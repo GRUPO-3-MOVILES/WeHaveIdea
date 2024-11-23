@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
@@ -35,28 +37,29 @@ public class Roadmap extends AuditableAbstractAggregateRoot<Roadmap> {
         this.description = command.description();
         this.nodes = new ArrayList<>();
         this.edges = new ArrayList<>();
+        this.aiInteractionId = command.aiInteractionId();
     }
 
-    // Metodo para agregar nodos y aristas generadas por IA (AIInteraction)
+    private static final Logger logger = LoggerFactory.getLogger(Roadmap.class);
+
     public void addAIInteraction(AIInteraction aiInteraction) {
-        addNodes(aiInteraction.getNodes()); // Agregar todos los nodos
-        addEdges(aiInteraction.getEdges()); // Agregar todas las aristas
+        addNodes(aiInteraction.getNodes()); // Add all nodes
+        addEdges(aiInteraction.getEdges()); // Add all edges
     }
 
-     // Metodo para agregar un nodo individualmente o multiples nodos
-    public void addNodes(List<Node> nodes) {
-        for (Node node : nodes) {
-            if (!this.nodes.contains(node)) {
-                this.nodes.add(node);
-            }
-        }
-    }
-
-    // Metodo para agregar una arista (edge) individualmente o multiples aristas
     public void addEdges(List<Edge> edges) {
         for (Edge edge : edges) {
             if (!this.edges.contains(edge)) {
                 this.edges.add(edge);
+                logger.info("Edge added: {}", edge);
+            }
+        }
+    }
+
+    public void addNodes(List<Node> nodes) {
+        for (Node node : nodes) {
+            if (!this.nodes.contains(node)) {
+                this.nodes.add(node);
             }
         }
     }

@@ -28,7 +28,7 @@ public class GeminiServiceImpl {
     }
 
     // Obtener la interacción AI (nodos y aristas) desde Gemini
-    public AIInteraction getAIInteractionCompletion(String userPrompt, String roadmapId) {
+    public AIInteraction getAIInteractionCompletion(String userPrompt) {
         String fullPrompt = buildPrompt(userPrompt);
         JsonStructure.GeminiRequest request = new JsonStructure.GeminiRequest(
                 List.of(new JsonStructure.Content(List.of(new JsonStructure.TextPart(fullPrompt))))
@@ -42,7 +42,7 @@ public class GeminiServiceImpl {
         List<Edge> edges = extractEdgesFromGeminiResponse(response);
 
         // Devolver un objeto AIInteraction que contiene los nodos y aristas
-        return new AIInteraction(roadmapId, nodes, edges);
+        return new AIInteraction(nodes, edges);
     }
 
     // Construir el prompt con instrucciones detalladas para la API

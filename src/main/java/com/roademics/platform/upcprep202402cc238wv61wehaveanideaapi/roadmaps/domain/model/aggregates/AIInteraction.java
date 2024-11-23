@@ -9,18 +9,16 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
+@EqualsAndHashCode(callSuper = true)
 @Document(collection = "ai_interactions")
 public class AIInteraction extends AuditableAbstractAggregateRoot<AIInteraction> {
 
-    private String roadmapId;
     private List<Node> nodes;
     private List<Edge> edges;
 
     // Constructor
-    public AIInteraction(String roadmapId, List<Node> nodes, List<Edge> edges) {
-        this.roadmapId = roadmapId;
+    public AIInteraction(List<Node> nodes, List<Edge> edges) {
         this.nodes = nodes;
         this.edges = edges;
     }

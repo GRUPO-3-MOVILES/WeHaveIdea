@@ -28,7 +28,7 @@ public class JsonParser {
             });
 
             // 4. Crear el objeto AIInteraction con los nodos y aristas
-            return new AIInteraction(roadmapId, nodes, edges);
+            return new AIInteraction(nodes, edges);
         } catch (JsonProcessingException e) {
             throw new JsonProcessingException("Error parsing JSON response: " + e.getMessage()) {};
         } catch (Exception e) {
